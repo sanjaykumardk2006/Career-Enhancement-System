@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { adminGetStats } from '../../services/api';
 import toast from 'react-hot-toast';
-import { Users, Briefcase, Mic, FileText, TrendingUp, Clock } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { Users, Briefcase, Mic, FileText, Clock } from 'lucide-react';
+import { Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 const STATUS_COLORS = { Applied: '#6366f1', Screening: '#f59e0b', Interview: '#06b6d4', Offer: '#10b981', Rejected: '#ef4444', Withdrawn: '#6060a0' };
 

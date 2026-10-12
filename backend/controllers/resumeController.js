@@ -1,7 +1,5 @@
 const Resume = require('../models/Resume');
-const { generateJSON, generateContent } = require('../utils/geminiClient');
-const path = require('path');
-const fs = require('fs');
+const { generateJSON } = require('../utils/geminiClient');
 
 // @desc    Get user's resume
 // @route   GET /api/resume

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { updateProfile, getCareerRecommendations } from '../../services/api';
+import { updateProfile } from '../../services/api';
 import toast from 'react-hot-toast';
 import { Target, Sparkles, ChevronRight } from 'lucide-react';
 

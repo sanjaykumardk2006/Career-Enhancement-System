@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { generateRoadmap, getRoadmap, updateTopicProgress } from '../../services/api';
 import toast from 'react-hot-toast';
-import { BookOpen, RefreshCw, CheckCircle, Circle, ExternalLink, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import { BookOpen, CheckCircle, Circle, ExternalLink, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 
 const resourceTypeIcon = { Video: '🎬', Article: '📄', Course: '🎓', Book: '📚', Practice: '💻' };
 
@@ -20,7 +20,10 @@ export default function LearningRoadmap() {
         const { data } = await getRoadmap();
         setRoadmap(data);
         setExpandedPhases({ 0: true });
-      } catch {}
+      } catch (err) {
+        // No roadmap generated yet
+        console.debug('No roadmap found for user', err?.message);
+      }
       setLoading(false);
     };
     fetchRoadmap();

@@ -27,10 +27,17 @@ export default function Dashboard() {
         const jobs = jobsRes.status === 'fulfilled' ? jobsRes.value.data : [];
         const interviews = interviewsRes.status === 'fulfilled' ? interviewsRes.value.data : [];
         let progress = 0;
-        try { const roadmapRes = await getRoadmap(); progress = roadmapRes.data.overallProgress || 0; } catch {}
+        try {
+          const roadmapRes = await getRoadmap();
+          progress = roadmapRes.data.overallProgress || 0;
+        } catch (err) {
+          console.debug('No roadmap found yet', err?.message);
+        }
         setStats({ jobs: jobs.length, interviews: interviews.length, progress });
         setRecentJobs(jobs.slice(0, 3));
-      } catch (e) {}
+      } catch (err) {
+        console.debug('Dashboard data error', err?.message);
+      }
       setLoading(false);
     };
     fetchData();

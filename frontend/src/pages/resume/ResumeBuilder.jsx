@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getResume, updateResume } from '../../services/api';
 import toast from 'react-hot-toast';
-import { FileText, Plus, Trash2, Save, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Trash2, Save } from 'lucide-react';
 import './ResumeBuilder.css';
 
 const TABS = ['Personal', 'Summary', 'Education', 'Experience', 'Skills', 'Projects', 'Certifications'];

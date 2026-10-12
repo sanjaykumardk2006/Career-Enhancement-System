@@ -1,4 +1,7 @@
 const JobApplication = require('../models/JobApplication');
+const User = require('../models/User');
+const Interview = require('../models/Interview');
+const Resume = require('../models/Resume');
 
 // @desc    Get all job applications
 // @route   GET /api/jobs
@@ -89,10 +92,6 @@ const adminGetAllApplications = async (req, res) => {
 // @access  Private/Admin
 const adminGetStats = async (req, res) => {
   try {
-    const User = require('../models/User');
-    const Interview = require('../models/Interview');
-    const Resume = require('../models/Resume');
-
     const totalUsers = await User.countDocuments({ role: 'student' });
     const totalJobs = await JobApplication.countDocuments();
     const totalInterviews = await Interview.countDocuments();

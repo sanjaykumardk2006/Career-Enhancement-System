@@ -20,7 +20,7 @@ export default function InterviewSession() {
       if (data.status === 'completed') setSubmitted(true);
       setLoading(false);
     }).catch(() => { toast.error('Interview not found'); navigate('/interview'); });
-  }, [id]);
+  }, [id, navigate]);
 
   const handleSubmit = async () => {
     const answerArr = Object.entries(answers).map(([questionIndex, answer]) => ({ questionIndex: parseInt(questionIndex), answer }));

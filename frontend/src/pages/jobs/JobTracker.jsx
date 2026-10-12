@@ -19,15 +19,26 @@ export default function JobTracker() {
   const [filterStatus, setFilterStatus] = useState('All');
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchJobs = async () => {
-    try {
-      const { data } = await getJobApplications();
-      setJobs(data);
-    } catch { toast.error('Failed to load jobs'); }
-    setLoading(false);
-  };
 
-  useEffect(() => { fetchJobs(); }, []);
+  useEffect(() => {
+    let ignore = false;
+    getJobApplications()
+      .then(({ data }) => {
+        if (!ignore) {
+          setJobs(data);
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        if (!ignore) {
+          toast.error('Failed to load jobs');
+          setLoading(false);
+        }
+      });
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const openModal = (job = null) => {
     setEditingJob(job);

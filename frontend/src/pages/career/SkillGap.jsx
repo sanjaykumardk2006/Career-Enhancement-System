@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { getSkillGapAnalysis } from '../../services/api';
 import toast from 'react-hot-toast';
-import { BookOpen, Search, ArrowRight, CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import { Search, ArrowRight, CheckCircle, AlertCircle, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const priorityStyles = { Critical: 'badge-danger', Important: 'badge-warning', 'Nice-to-have': 'badge-muted' };

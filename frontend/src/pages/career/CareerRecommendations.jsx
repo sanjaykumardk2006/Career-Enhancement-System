@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { getCareerRecommendations } from '../../services/api';
 import toast from 'react-hot-toast';
-import { Brain, TrendingUp, Sparkles, RefreshCw, DollarSign, Zap } from 'lucide-react';
+import { Brain, TrendingUp, RefreshCw, DollarSign, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function CareerRecommendations() {
@@ -27,7 +27,25 @@ export default function CareerRecommendations() {
     }
   };
 
-  useEffect(() => { if (user?.careerGoal) fetchRecommendations(); }, []);
+  useEffect(() => {
+    let ignore = false;
+    if (user?.careerGoal) {
+      getCareerRecommendations({
+        careerGoal: user.careerGoal,
+        currentSkills: user.skills || [],
+        education: user.education || [],
+      })
+        .then((res) => {
+          if (!ignore) setData(res.data);
+        })
+        .catch((err) => {
+          if (!ignore) toast.error(err.response?.data?.message || 'Failed to get recommendations');
+        });
+    }
+    return () => {
+      ignore = true;
+    };
+  }, [user?.careerGoal, user?.skills, user?.education]);
 
   const demandColor = { High: 'badge-success', Medium: 'badge-warning', Low: 'badge-danger' };
 

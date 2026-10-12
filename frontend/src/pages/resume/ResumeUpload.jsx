@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { uploadResume, analyzeResume } from '../../services/api';
 import toast from 'react-hot-toast';
-import { Upload, FileText, Brain, CheckCircle, AlertCircle, Lightbulb, Tag, RefreshCw } from 'lucide-react';
+import { Upload, Brain, CheckCircle, AlertCircle, Lightbulb, Tag } from 'lucide-react';
 
 export default function ResumeUpload() {
   const [uploading, setUploading] = useState(false);
@@ -17,7 +17,7 @@ export default function ResumeUpload() {
     formData.append('resume', file);
     setUploading(true);
     try {
-      const { data } = await uploadResume(formData);
+      await uploadResume(formData);
       setUploaded(file.name);
       toast.success('Resume uploaded successfully!');
     } catch (err) {

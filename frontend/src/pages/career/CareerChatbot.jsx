@@ -38,7 +38,7 @@ export default function CareerChatbot() {
     try {
       const { data } = await careerChat({ message: msg, history: messages.slice(-8) });
       setMessages([...newMessages, { role: 'assistant', content: data.reply }]);
-    } catch (err) {
+    } catch {
       toast.error('Failed to get response. Try again.');
       setMessages(newMessages);
     } finally {
