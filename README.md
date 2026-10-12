@@ -128,3 +128,37 @@ npm run dev
 
 After running, register any account. To create an admin:
 - Register normally, then in MongoDB Atlas change `role: "student"` → `role: "admin"` for that user document.
+
+## 🚀 Production Deployment Guide
+
+### 1. Deploy Backend on Render (Web Service)
+1. Go to **[render.com](https://render.com)** → Click **New +** → **Web Service**.
+2. Connect your GitHub repository `sanjaykumardk2006/Career-Enhancement-System`.
+3. Configure settings:
+   - **Name**: `career-enhancement-backend`
+   - **Root Directory**: `backend`
+   - **Environment**: `Node`
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+4. In **Environment Variables**, add:
+   - `NODE_ENV`: `production`
+   - `MONGO_URI`: `mongodb+srv://sanjaykumardk2006_db_user:<password>@cluster0.pat8nue.mongodb.net/careerAI?retryWrites=true&w=majority`
+   - `JWT_SECRET`: `your_jwt_secret_key`
+   - `GEMINI_API_KEY`: `your_gemini_api_key`
+   - `CLIENT_URL`: `https://your-frontend-app.vercel.app` (or `*`)
+5. Click **Deploy Web Service** and copy your backend URL (e.g. `https://career-enhancement-backend.onrender.com`).
+
+---
+
+### 2. Deploy Frontend on Vercel
+1. Go to **[vercel.com](https://vercel.com)** → Click **Add New...** → **Project**.
+2. Import your GitHub repository `sanjaykumardk2006/Career-Enhancement-System`.
+3. Configure project:
+   - **Framework Preset**: `Vite`
+   - **Root Directory**: Click *Edit* and select **`frontend`**
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+4. In **Environment Variables**, add:
+   - `VITE_API_URL`: `https://<your-render-backend-name>.onrender.com/api`
+5. Click **Deploy**!
+

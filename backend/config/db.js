@@ -4,11 +4,11 @@ const User = require('../models/User');
 
 const connectDB = async () => {
   try {
-    let uri = process.env.MONGO_URI;
+    let uri = process.env.MONGO_URI || process.env.MONGODB_URI;
 
     // If the user hasn't configured a real database, use an in-memory test database!
-    if (!uri || uri === 'your_mongodb_atlas_connection_string') {
-      console.log('⚠️ No MongoDB URI provided. Starting an IN-MEMORY test database...');
+    if (!uri || uri === 'your_mongodb_atlas_connection_string' || uri.includes('<db_username>') || uri.includes('<db_password>')) {
+      console.log('⚠️ MongoDB Atlas credentials (<db_username> / <db_password>) need to be replaced in backend/.env. Running on IN-MEMORY database in the meantime...');
       const mongoServer = await MongoMemoryServer.create();
       uri = mongoServer.getUri();
     }

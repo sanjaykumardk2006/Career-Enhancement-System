@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const API = axios.create({ baseURL: '/api' });
+// In development, defaults to '/api' (proxied by Vite to localhost:5000)
+// In production on Vercel, uses VITE_API_URL (e.g., https://career-backend.onrender.com/api)
+const baseURL = import.meta.env.VITE_API_URL || '/api';
+
+const API = axios.create({ baseURL });
 
 // Automatically attach token to every request
 API.interceptors.request.use((config) => {
