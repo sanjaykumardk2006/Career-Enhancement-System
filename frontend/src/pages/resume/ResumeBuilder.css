@@ -1,0 +1,11 @@
+.resume-builder { max-width: 900px; }
+
+.section-item {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  transition: var(--transition);
+}
+.section-item:hover { border-color: var(--border-hover); }
