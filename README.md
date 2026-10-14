@@ -2,7 +2,7 @@
 
 An AI-powered full-stack MERN application for career guidance, resume building, mock interviews, and job tracking.
 
-## 🏗️ Project Structure
+## 🏗️ Project Stru
 
 ```
 Career Enhancement System/
