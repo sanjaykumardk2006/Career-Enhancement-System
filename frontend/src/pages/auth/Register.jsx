@@ -1,32 +1,58 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { register } from '../../services/api';
 import toast from 'react-hot-toast';
-import { User, Mail, Lock, Eye, EyeOff, Zap } from 'lucide-react';
+import { User, Mail, Lock, Eye, EyeOff, Zap, ShieldCheck } from 'lucide-react';
 import './Auth.css';
 
 export default function Register() {
-  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const { loginUser } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
+
+  const [form, setForm] = useState({
+    name: '',
+    email: location.state?.email || '',
+    password: '',
+    confirmPassword: '',
+    role: 'student',
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (location.state?.email) {
+      setForm((prev) => ({ ...prev, email: location.state.email }));
+    }
+  }, [location.state]);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (form.password !== form.confirmPassword) return toast.error('Passwords do not match');
+    if (!form.name.trim()) return toast.error('Please enter your full name');
+    if (!form.email.trim()) return toast.error('Please enter your email address');
     if (form.password.length < 6) return toast.error('Password must be at least 6 characters');
+    if (form.password !== form.confirmPassword) return toast.error('Passwords do not match');
+
     setLoading(true);
     try {
-      const { data } = await register({ name: form.name, email: form.email, password: form.password });
-      loginUser(data);
-      toast.success(`Welcome aboard, ${data.name}! 🎉`);
-      navigate('/dashboard');
+      await register({
+        name: form.name.trim(),
+        email: form.email.trim(),
+        password: form.password,
+        role: form.role,
+      });
+
+      toast.success('Account successfully registered in database! 🎉');
+      navigate('/login', {
+        state: {
+          email: form.email.trim(),
+          registeredSuccess: true,
+        },
+      });
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Registration failed');
+      toast.error(err.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -47,43 +73,133 @@ export default function Register() {
         </div>
         <div className="auth-card">
           <h2>Create your account</h2>
-          <p className="auth-subtitle">Start your career journey today</p>
+          <p className="auth-subtitle">Register credentials into the database</p>
+
           <form onSubmit={handleSubmit} className="auth-form">
+            <div className="form-group">
+              <label className="form-label">I am a</label>
+              <div className="role-selector">
+                <button
+                  type="button"
+                  className={`role-btn ${form.role === 'student' ? 'active' : ''}`}
+                  onClick={() => setForm({ ...form, role: 'student' })}
+                >
+                  🎓 Student / Job Seeker
+                </button>
+                <button
+                  type="button"
+                  className={`role-btn ${form.role === 'admin' ? 'active' : ''}`}
+                  onClick={() => setForm({ ...form, role: 'admin' })}
+                >
+                  🛡️ Admin / Recruiter
+                </button>
+              </div>
+            </div>
+
             <div className="form-group">
               <label className="form-label">Full Name</label>
               <div className="input-wrapper">
                 <User size={16} className="input-icon" />
-                <input id="register-name" name="name" type="text" placeholder="John Doe" value={form.name} onChange={handleChange} className="form-input with-icon" required />
+                <input
+                  id="register-name"
+                  name="name"
+                  type="text"
+                  placeholder="e.g. John Doe"
+                  value={form.name}
+                  onChange={handleChange}
+                  className="form-input with-icon"
+                  required
+                />
               </div>
             </div>
+
             <div className="form-group">
               <label className="form-label">Email Address</label>
               <div className="input-wrapper">
                 <Mail size={16} className="input-icon" />
-                <input id="register-email" name="email" type="email" placeholder="john@example.com" value={form.email} onChange={handleChange} className="form-input with-icon" required />
+                <input
+                  id="register-email"
+                  name="email"
+                  type="email"
+                  placeholder="name@example.com"
+                  value={form.email}
+                  onChange={handleChange}
+                  className="form-input with-icon"
+                  required
+                />
               </div>
             </div>
+
             <div className="form-group">
               <label className="form-label">Password</label>
               <div className="input-wrapper">
                 <Lock size={16} className="input-icon" />
-                <input id="register-password" name="password" type={showPassword ? 'text' : 'password'} placeholder="Min. 6 characters" value={form.password} onChange={handleChange} className="form-input with-icon with-icon-right" required />
-                <button type="button" className="input-icon-right" onClick={() => setShowPassword(!showPassword)}>
+                <input
+                  id="register-password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Min. 6 characters"
+                  value={form.password}
+                  onChange={handleChange}
+                  className="form-input with-icon with-icon-right"
+                  required
+                />
+                <button
+                  type="button"
+                  className="input-icon-right"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
+
             <div className="form-group">
               <label className="form-label">Confirm Password</label>
               <div className="input-wrapper">
                 <Lock size={16} className="input-icon" />
-                <input id="register-confirm" name="confirmPassword" type="password" placeholder="Repeat your password" value={form.confirmPassword} onChange={handleChange} className="form-input with-icon" required />
+                <input
+                  id="register-confirm"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  placeholder="Repeat your password"
+                  value={form.confirmPassword}
+                  onChange={handleChange}
+                  className="form-input with-icon with-icon-right"
+                  required
+                />
+                <button
+                  type="button"
+                  className="input-icon-right"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
               </div>
             </div>
-            <button id="register-submit" type="submit" className="btn btn-primary btn-full btn-lg" disabled={loading}>
-              {loading ? <><span className="spinner-sm" />Creating Account...</> : 'Create Account'}
+
+            <button
+              id="register-submit"
+              type="submit"
+              className="btn btn-primary btn-full btn-lg"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="spinner-sm" />
+                  Storing in Database...
+                </>
+              ) : (
+                'Sign Up & Save Account'
+              )}
             </button>
           </form>
+
+          <div className="auth-security-note">
+            <ShieldCheck size={14} style={{ color: 'var(--primary-light)' }} />
+            <span>Credentials will be securely encrypted in MongoDB</span>
+          </div>
+
           <p className="auth-footer">
             Already have an account? <Link to="/login">Sign in</Link>
           </p>

@@ -1,29 +1,31 @@
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
-const User = require('../models/User');
 
 const connectDB = async () => {
   try {
     let uri = process.env.MONGO_URI || process.env.MONGODB_URI;
 
-    // If the user hasn't configured a real database, use an in-memory test database!
+    // If the user hasn't configured a real database, use an in-memory database
     if (!uri || uri === 'your_mongodb_atlas_connection_string' || uri.includes('<db_username>') || uri.includes('<db_password>')) {
-      console.log('⚠️ MongoDB Atlas credentials (<db_username> / <db_password>) need to be replaced in backend/.env. Running on IN-MEMORY database in the meantime...');
+      console.log('⚠️ MongoDB Atlas credentials need to be configured in backend/.env. Using fallback database...');
       const mongoServer = await MongoMemoryServer.create();
       uri = mongoServer.getUri();
+      const conn = await mongoose.connect(uri);
+      console.log(`✅ In-Memory Database Connected: ${conn.connection.host}`);
+      return;
     }
 
-    const conn = await mongoose.connect(uri);
-    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
-
-    // Seed demo accounts if they don't exist
-    const demoStudent = await User.findOne({ email: 'student@demo.com' });
-    if (!demoStudent) {
-      await User.create({ name: 'Demo Student', email: 'student@demo.com', password: 'demo123', role: 'student' });
-      await User.create({ name: 'Demo Admin', email: 'admin@demo.com', password: 'admin123', role: 'admin' });
-      console.log('🌱 Seeded demo accounts (student@demo.com, admin@demo.com)');
+    try {
+      const conn = await mongoose.connect(uri, { serverSelectionTimeoutMS: 5000 });
+      console.log(`✅ MongoDB Atlas Connected: ${conn.connection.host}`);
+    } catch (atlasErr) {
+      console.error(`⚠️ MongoDB Atlas Connection Warning: ${atlasErr.message}`);
+      console.log('💡 TIP: If connecting to MongoDB Atlas, ensure your current IP address is whitelisted in Atlas (Network Access -> Add IP -> 0.0.0.0/0).');
+      console.log('🔄 Starting fallback database so the server stays available...');
+      const mongoServer = await MongoMemoryServer.create();
+      const fallbackConn = await mongoose.connect(mongoServer.getUri());
+      console.log(`✅ Fallback Database Connected: ${fallbackConn.connection.host}`);
     }
-
   } catch (error) {
     console.error(`❌ MongoDB Connection Error: ${error.message}`);
     process.exit(1);
