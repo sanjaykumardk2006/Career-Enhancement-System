@@ -23,7 +23,7 @@ Career Enhancement System/
 │   │   └── LearningRoadmap.js
 │   ├── routes/                 # Express route definitions
 │   ├── utils/
-│   │   ├── geminiClient.js     # Google Gemini AI utility
+│   │   ├── geminiClient.js     # Google Gemini AI utilit
 │   │   └── generateToken.js    # JWT token generator
 │   ├── server.js               # Express entry point
 │   ├── package.json
