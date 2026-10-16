@@ -82,11 +82,11 @@ export default function InterviewSession() {
           </div>
 
           {/* Navigation */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
             <button onClick={() => setCurrentQ(Math.max(0, currentQ - 1))} className="btn btn-secondary" disabled={currentQ === 0}>
               <ChevronLeft size={16} />Previous
             </button>
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
               {interview.questions.map((_, i) => (
                 <button key={i} onClick={() => setCurrentQ(i)}
                   style={{ width: 28, height: 28, borderRadius: '50%', border: `2px solid ${i === currentQ ? 'var(--primary)' : answers[i] ? 'var(--success)' : 'var(--border)'}`, background: answers[i] ? 'rgba(16,185,129,0.15)' : i === currentQ ? 'rgba(99,102,241,0.15)' : 'transparent', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 600, color: i === currentQ ? 'var(--primary-light)' : answers[i] ? 'var(--success)' : 'var(--text-muted)', transition: 'all 0.2s' }}>

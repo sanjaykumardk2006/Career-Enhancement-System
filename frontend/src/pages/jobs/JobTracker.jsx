@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { getJobApplications, createJobApplication, updateJobApplication, deleteJobApplication } from '../../services/api';
 import toast from 'react-hot-toast';
 import { Plus, Briefcase, Search, Trash2, Edit, X, ExternalLink } from 'lucide-react';
+import './JobTracker.css';
 
 const STATUS_OPTIONS = ['Applied', 'Screening', 'Interview', 'Offer', 'Rejected', 'Withdrawn'];
 const STATUS_COLORS = { Applied: '#6366f1', Screening: '#f59e0b', Interview: '#06b6d4', Offer: '#10b981', Rejected: '#ef4444', Withdrawn: '#6060a0' };
@@ -92,7 +93,7 @@ export default function JobTracker() {
       </div>
 
       {/* Stats */}
-      <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+      <div className="job-filter-buttons">
         {STATUS_OPTIONS.map((s) => (
           <button key={s} onClick={() => setFilterStatus(filterStatus === s ? 'All' : s)}
             style={{ padding: '0.5rem 1rem', borderRadius: 'var(--radius-full)', border: `1px solid ${filterStatus === s ? STATUS_COLORS[s] : 'var(--border)'}`, background: filterStatus === s ? `${STATUS_COLORS[s]}18` : 'var(--bg-card)', color: filterStatus === s ? STATUS_COLORS[s] : 'var(--text-muted)', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600, transition: 'all 0.2s' }}>
@@ -120,11 +121,11 @@ export default function JobTracker() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {filtered.map((job) => (
-            <div key={job._id} className="card" style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem 1.25rem' }}>
+            <div key={job._id} className="card job-card">
               <div style={{ width: 44, height: 44, background: `${STATUS_COLORS[job.status]}22`, border: `1px solid ${STATUS_COLORS[job.status]}40`, borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: STATUS_COLORS[job.status], flexShrink: 0 }}>
                 {job.company[0]?.toUpperCase()}
               </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="job-card-main">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                   <p style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.925rem' }}>{job.position}</p>
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>@{job.company}</span>
@@ -136,13 +137,15 @@ export default function JobTracker() {
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{new Date(job.appliedDate).toLocaleDateString()}</span>
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
+              <div className="job-card-actions">
                 <span style={{ padding: '0.25rem 0.75rem', borderRadius: 'var(--radius-full)', fontSize: '0.75rem', fontWeight: 600, background: `${STATUS_COLORS[job.status]}18`, color: STATUS_COLORS[job.status], border: `1px solid ${STATUS_COLORS[job.status]}40` }}>
                   {job.status}
                 </span>
-                {job.jobUrl && <a href={job.jobUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-icon"><ExternalLink size={15} /></a>}
-                <button onClick={() => openModal(job)} className="btn btn-ghost btn-icon"><Edit size={15} /></button>
-                <button onClick={() => handleDelete(job._id)} className="btn btn-ghost btn-icon" style={{ color: 'var(--danger)' }}><Trash2 size={15} /></button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                  {job.jobUrl && <a href={job.jobUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-icon"><ExternalLink size={15} /></a>}
+                  <button onClick={() => openModal(job)} className="btn btn-ghost btn-icon"><Edit size={15} /></button>
+                  <button onClick={() => handleDelete(job._id)} className="btn btn-ghost btn-icon" style={{ color: 'var(--danger)' }}><Trash2 size={15} /></button>
+                </div>
               </div>
             </div>
           ))}
@@ -152,7 +155,7 @@ export default function JobTracker() {
       {/* Modal */}
       {showModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}>
-          <div className="card" style={{ width: '100%', maxWidth: 580, maxHeight: '90vh', overflow: 'auto' }}>
+          <div className="card job-modal-card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
               <h4>{editingJob ? 'Edit Application' : 'Add Application'}</h4>
               <button onClick={() => setShowModal(false)} className="btn btn-ghost btn-icon"><X size={18} /></button>

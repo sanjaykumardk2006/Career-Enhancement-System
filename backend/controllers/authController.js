@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
 
-// @desc    Register new user
+// @desc    Register new user (Students / Candidates only)
 // @route   POST /api/auth/register
 // @access  Public
 const registerUser = async (req, res) => {
@@ -16,19 +16,26 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
     }
 
+    // Explicit security check: Prevent any public registration attempt to claim admin privileges
+    if (role && role.toLowerCase() === 'admin') {
+      return res.status(403).json({
+        message: 'Security Alert: Administrator accounts cannot be created via public registration.',
+        code: 'ADMIN_REGISTRATION_FORBIDDEN',
+      });
+    }
+
     const cleanEmail = email.toLowerCase().trim();
     const userExists = await User.findOne({ email: cleanEmail });
     if (userExists) {
       return res.status(400).json({ message: 'An account with this email already exists. Please sign in instead.' });
     }
 
-    const assignedRole = role && ['student', 'admin'].includes(role) ? role : 'student';
-
+    // Public registration always assigns 'student' role
     const user = await User.create({
       name: name.trim(),
       email: cleanEmail,
       password,
-      role: assignedRole,
+      role: 'student',
     });
 
     res.status(201).json({
@@ -38,6 +45,66 @@ const registerUser = async (req, res) => {
       role: user.role,
       token: generateToken(user._id),
       message: 'Account created successfully in database!',
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Register administrator (Restricted - Requires ADMIN_SECRET_KEY)
+// @route   POST /api/auth/admin-register
+// @access  Restricted
+const registerAdmin = async (req, res) => {
+  try {
+    const { name, email, password, adminSecretKey } = req.body;
+
+    const configuredSecret = process.env.ADMIN_SECRET_KEY;
+    if (!configuredSecret || !adminSecretKey || adminSecretKey.trim() !== configuredSecret.trim()) {
+      return res.status(403).json({
+        message: 'Access Denied: Invalid or missing administrator authorization key.',
+        code: 'INVALID_ADMIN_SECRET',
+      });
+    }
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Please provide name, email, and password.' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+    let user = await User.findOne({ email: cleanEmail });
+
+    if (user) {
+      // If user exists, elevate to admin
+      user.role = 'admin';
+      await user.save();
+      return res.json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        token: generateToken(user._id),
+        message: 'Existing user elevated to Administrator successfully.',
+      });
+    }
+
+    user = await User.create({
+      name: name.trim(),
+      email: cleanEmail,
+      password,
+      role: 'admin',
+    });
+
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      token: generateToken(user._id),
+      message: 'Administrator account registered successfully!',
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -152,4 +219,4 @@ const updateProfile = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getMe, updateProfile };
+module.exports = { registerUser, registerAdmin, loginUser, getMe, updateProfile };

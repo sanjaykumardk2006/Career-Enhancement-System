@@ -203,6 +203,13 @@ export default function Login() {
           <p className="auth-footer">
             Don't have an account? <Link to="/register">Sign up first</Link>
           </p>
+
+          <div className="auth-admin-link">
+            <Link to="/admin/login">
+              <ShieldCheck size={13} />
+              <span>Administrative Gateway</span>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

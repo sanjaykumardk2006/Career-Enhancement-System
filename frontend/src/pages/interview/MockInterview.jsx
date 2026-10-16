@@ -36,7 +36,7 @@ export default function MockInterview() {
 
       <div className="card mb-2">
         <h4 style={{ marginBottom: '1.25rem' }}>Select Job Role</h4>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem', marginBottom: '1.25rem' }}>
+        <div className="roles-grid">
           {JOB_ROLES.map((role) => (
             <button key={role} onClick={() => { setForm({ ...form, jobRole: role }); setCustom(''); }}
               style={{

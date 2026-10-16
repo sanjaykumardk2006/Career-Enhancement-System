@@ -12,6 +12,8 @@ const connectDB = async () => {
       uri = mongoServer.getUri();
       const conn = await mongoose.connect(uri);
       console.log(`✅ In-Memory Database Connected: ${conn.connection.host}`);
+      const seedAdmin = require('../utils/seedAdmin');
+      await seedAdmin();
       return;
     }
 
@@ -26,6 +28,10 @@ const connectDB = async () => {
       const fallbackConn = await mongoose.connect(mongoServer.getUri());
       console.log(`✅ Fallback Database Connected: ${fallbackConn.connection.host}`);
     }
+
+    // Automatically ensure system administrator exists from .env
+    const seedAdmin = require('../utils/seedAdmin');
+    await seedAdmin();
   } catch (error) {
     console.error(`❌ MongoDB Connection Error: ${error.message}`);
     process.exit(1);

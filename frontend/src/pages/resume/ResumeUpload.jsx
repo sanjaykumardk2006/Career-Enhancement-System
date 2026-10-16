@@ -60,7 +60,7 @@ export default function ResumeUpload() {
         <div {...getRootProps()} style={{
           border: `2px dashed ${isDragActive ? 'var(--primary)' : 'var(--border)'}`,
           borderRadius: 'var(--radius-lg)',
-          padding: '3rem 2rem',
+          padding: 'clamp(1.5rem, 5vw, 3rem) 1rem',
           textAlign: 'center',
           cursor: 'pointer',
           background: isDragActive ? 'rgba(99,102,241,0.06)' : 'var(--bg-input)',
@@ -112,7 +112,7 @@ export default function ResumeUpload() {
           {/* Score */}
           <div className="card" style={{ textAlign: 'center', background: 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(6,182,212,0.1))' }}>
             <p style={{ color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Resume Score</p>
-            <div style={{ fontSize: '4rem', fontWeight: 900, fontFamily: 'Outfit', background: 'linear-gradient(135deg, var(--primary-light), var(--secondary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+            <div style={{ fontSize: 'clamp(2.5rem, 8vw, 4rem)', fontWeight: 900, fontFamily: 'Outfit', background: 'linear-gradient(135deg, var(--primary-light), var(--secondary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
               {analysis.score}/100
             </div>
             <div className="progress-bar" style={{ maxWidth: 300, margin: '1rem auto 0' }}>

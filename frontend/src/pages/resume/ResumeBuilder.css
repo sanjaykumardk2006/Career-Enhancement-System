@@ -9,3 +9,9 @@
   transition: var(--transition);
 }
 .section-item:hover { border-color: var(--border-hover); }
+
+@media (max-width: 600px) {
+  .section-item {
+    padding: 1rem 0.85rem;
+  }
+}

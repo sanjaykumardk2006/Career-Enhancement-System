@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import {
   LayoutDashboard, User, Briefcase, FileText, Brain,
   Mic, BookOpen, TrendingUp, LogOut, ChevronLeft, ChevronRight,
-  ShieldCheck, MessageSquare
+  ShieldCheck, MessageSquare, X
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -26,15 +26,23 @@ const adminItems = [
   { to: '/admin', icon: ShieldCheck, label: 'Admin Dashboard' },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ mobileOpen = false, closeMobile }) {
   const [collapsed, setCollapsed] = useState(false);
   const { user, logoutUser } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => { logoutUser(); navigate('/login'); };
+  const handleLogout = () => {
+    if (closeMobile) closeMobile();
+    logoutUser();
+    navigate('/login');
+  };
+
+  const handleNavClick = () => {
+    if (closeMobile) closeMobile();
+  };
 
   return (
-    <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+    <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`}>
       <div className="sidebar-header">
         {!collapsed && (
           <div className="sidebar-brand">
@@ -46,8 +54,23 @@ export default function Sidebar() {
           </div>
         )}
         {collapsed && <div className="brand-icon-only">⚡</div>}
-        <button className="collapse-btn" onClick={() => setCollapsed(!collapsed)}>
+
+        {/* Desktop Collapse Toggle */}
+        <button
+          className="collapse-btn desktop-only"
+          onClick={() => setCollapsed(!collapsed)}
+          aria-label={collapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+        >
           {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+        </button>
+
+        {/* Mobile Close Button */}
+        <button
+          className="mobile-close-btn"
+          onClick={closeMobile}
+          aria-label="Close Navigation Menu"
+        >
+          <X size={20} />
         </button>
       </div>
 
@@ -63,9 +86,14 @@ export default function Sidebar() {
 
       <nav className="sidebar-nav">
         {navItems.map(({ to, icon: Icon, label }) => (
-          <NavLink key={to} to={to} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <NavLink
+            key={to}
+            to={to}
+            onClick={handleNavClick}
+            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+          >
             <Icon size={18} />
-            {!collapsed && <span>{label}</span>}
+            {(!collapsed || mobileOpen) && <span>{label}</span>}
           </NavLink>
         ))}
 
@@ -73,9 +101,14 @@ export default function Sidebar() {
           <>
             <div className="nav-divider" />
             {adminItems.map(({ to, icon: Icon, label }) => (
-              <NavLink key={to} to={to} className={({ isActive }) => `nav-item admin-item ${isActive ? 'active' : ''}`}>
+              <NavLink
+                key={to}
+                to={to}
+                onClick={handleNavClick}
+                className={({ isActive }) => `nav-item admin-item ${isActive ? 'active' : ''}`}
+              >
                 <Icon size={18} />
-                {!collapsed && <span>{label}</span>}
+                {(!collapsed || mobileOpen) && <span>{label}</span>}
               </NavLink>
             ))}
           </>
@@ -85,7 +118,7 @@ export default function Sidebar() {
       <div className="sidebar-footer">
         <button className="nav-item logout-btn" onClick={handleLogout}>
           <LogOut size={18} />
-          {!collapsed && <span>Logout</span>}
+          {(!collapsed || mobileOpen) && <span>Logout</span>}
         </button>
       </div>
     </aside>

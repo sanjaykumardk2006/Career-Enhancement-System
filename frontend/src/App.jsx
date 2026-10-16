@@ -33,6 +33,7 @@ import JobTracker from './pages/jobs/JobTracker';
 
 // Pages - Admin
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminLogin from './pages/admin/AdminLogin';
 
 // Protected Route
 function ProtectedRoute({ children, adminOnly = false }) {
@@ -54,8 +55,9 @@ function AppRoutes() {
   return (
     <Routes>
       {/* Public Routes */}
-      <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
-      <Route path="/register" element={!user ? <Register /> : <Navigate to="/dashboard" />} />
+      <Route path="/login" element={!user ? <Login /> : <Navigate to={user.role === 'admin' ? '/admin' : '/dashboard'} />} />
+      <Route path="/admin/login" element={!user ? <AdminLogin /> : <Navigate to={user.role === 'admin' ? '/admin' : '/dashboard'} />} />
+      <Route path="/register" element={!user ? <Register /> : <Navigate to={user.role === 'admin' ? '/admin' : '/dashboard'} />} />
 
       {/* Protected Routes (all wrapped in Layout) */}
       <Route path="/dashboard" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />

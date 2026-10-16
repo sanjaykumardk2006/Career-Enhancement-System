@@ -81,6 +81,16 @@
 
 @media (max-width: 768px) {
   .quick-actions { grid-template-columns: repeat(2, 1fr); }
-  .dashboard-hero { padding: 1.5rem; }
+  .dashboard-hero { padding: 1.5rem 1.25rem; }
+  .hero-name { font-size: 1.75rem; }
   .hero-graphic { display: none; }
 }
+
+@media (max-width: 520px) {
+  .quick-actions { grid-template-columns: 1fr; }
+  .dashboard-hero { padding: 1.25rem 1rem; border-radius: var(--radius-lg); margin-bottom: 1.25rem; }
+  .hero-name { font-size: 1.5rem; }
+  .hero-sub { font-size: 0.85rem; }
+  .recent-job-card { padding: 0.85rem 1rem; }
+}
+

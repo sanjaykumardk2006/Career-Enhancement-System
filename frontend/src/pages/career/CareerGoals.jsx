@@ -44,7 +44,7 @@ export default function CareerGoals() {
 
       <div className="card mb-2">
         <h4 style={{ marginBottom: '1.25rem' }}>Select a Career Path</h4>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
+        <div className="goals-grid">
           {CAREER_GOALS.map((goal) => (
             <button key={goal} onClick={() => { setSelected(goal); setCustom(''); }}
               className={`goal-option ${selected === goal && !custom ? 'selected' : ''}`}

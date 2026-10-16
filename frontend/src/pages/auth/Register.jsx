@@ -14,7 +14,6 @@ export default function Register() {
     email: location.state?.email || '',
     password: '',
     confirmPassword: '',
-    role: 'student',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -41,7 +40,6 @@ export default function Register() {
         name: form.name.trim(),
         email: form.email.trim(),
         password: form.password,
-        role: form.role,
       });
 
       toast.success('Account successfully registered in database! 🎉');
@@ -73,28 +71,9 @@ export default function Register() {
         </div>
         <div className="auth-card">
           <h2>Create your account</h2>
-          <p className="auth-subtitle">Register credentials into the database</p>
+          <p className="auth-subtitle">Sign up as a student or job seeker to get started</p>
 
           <form onSubmit={handleSubmit} className="auth-form">
-            <div className="form-group">
-              <label className="form-label">I am a</label>
-              <div className="role-selector">
-                <button
-                  type="button"
-                  className={`role-btn ${form.role === 'student' ? 'active' : ''}`}
-                  onClick={() => setForm({ ...form, role: 'student' })}
-                >
-                  🎓 Student / Job Seeker
-                </button>
-                <button
-                  type="button"
-                  className={`role-btn ${form.role === 'admin' ? 'active' : ''}`}
-                  onClick={() => setForm({ ...form, role: 'admin' })}
-                >
-                  🛡️ Admin / Recruiter
-                </button>
-              </div>
-            </div>
 
             <div className="form-group">
               <label className="form-label">Full Name</label>

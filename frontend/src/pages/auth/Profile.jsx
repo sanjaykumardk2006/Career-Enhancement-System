@@ -49,7 +49,7 @@ export default function Profile() {
       </div>
 
       {/* Avatar Card */}
-      <div className="card mb-2" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+      <div className="card mb-2" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
         <div style={{ width: 72, height: 72, background: 'linear-gradient(135deg, var(--primary), var(--secondary))', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 800, color: 'white', flexShrink: 0 }}>
           {user?.name?.[0]?.toUpperCase()}
         </div>
