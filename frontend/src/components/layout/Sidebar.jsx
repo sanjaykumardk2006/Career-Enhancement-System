@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import {
   LayoutDashboard, User, Briefcase, FileText, Brain,
   Mic, BookOpen, TrendingUp, LogOut, ChevronLeft, ChevronRight,
-  ShieldCheck, MessageSquare, X
+  ShieldCheck, MessageSquare, X, Compass, Sparkles
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -12,13 +12,13 @@ const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/career/goals', icon: TrendingUp, label: 'Career Goals' },
   { to: '/career/recommendations', icon: Brain, label: 'AI Recommendations' },
-  { to: '/career/chatbot', icon: MessageSquare, label: 'Career Chatbot' },
+  { to: '/career/chatbot', icon: MessageSquare, label: 'Career Copilot' },
   { to: '/resume/builder', icon: FileText, label: 'Resume Builder' },
-  { to: '/resume/upload', icon: Briefcase, label: 'Resume Upload' },
-  { to: '/skills/gap', icon: BookOpen, label: 'Skill Gap Analysis' },
-  { to: '/skills/roadmap', icon: BookOpen, label: 'Learning Roadmap' },
+  { to: '/resume/upload', icon: Sparkles, label: 'Resume Intelligence' },
+  { to: '/skills/gap', icon: BookOpen, label: 'Skill Gap Matrix' },
+  { to: '/skills/roadmap', icon: Compass, label: 'Learning Roadmap' },
   { to: '/interview', icon: Mic, label: 'Mock Interview' },
-  { to: '/jobs', icon: Briefcase, label: 'Job Tracker' },
+  { to: '/jobs', icon: Briefcase, label: 'Pipeline Tracker' },
   { to: '/profile', icon: User, label: 'Profile' },
 ];
 
@@ -46,14 +46,20 @@ export default function Sidebar({ mobileOpen = false, closeMobile }) {
       <div className="sidebar-header">
         {!collapsed && (
           <div className="sidebar-brand">
-            <div className="brand-icon">⚡</div>
+            <div className="brand-icon">
+              <Compass size={20} strokeWidth={2.4} />
+            </div>
             <div>
-              <span className="brand-name">CareerAI</span>
-              <span className="brand-sub">Enhancement System</span>
+              <span className="brand-name">CareerOS</span>
+              <span className="brand-sub">Intelligence Platform</span>
             </div>
           </div>
         )}
-        {collapsed && <div className="brand-icon-only">⚡</div>}
+        {collapsed && (
+          <div className="brand-icon-only">
+            <Compass size={20} strokeWidth={2.4} />
+          </div>
+        )}
 
         {/* Desktop Collapse Toggle */}
         <button
@@ -61,7 +67,7 @@ export default function Sidebar({ mobileOpen = false, closeMobile }) {
           onClick={() => setCollapsed(!collapsed)}
           aria-label={collapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
         >
-          {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          {collapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}
         </button>
 
         {/* Mobile Close Button */}
@@ -70,7 +76,7 @@ export default function Sidebar({ mobileOpen = false, closeMobile }) {
           onClick={closeMobile}
           aria-label="Close Navigation Menu"
         >
-          <X size={20} />
+          <X size={18} />
         </button>
       </div>
 
@@ -92,7 +98,7 @@ export default function Sidebar({ mobileOpen = false, closeMobile }) {
             onClick={handleNavClick}
             className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
           >
-            <Icon size={18} />
+            <Icon size={17} strokeWidth={2} />
             {(!collapsed || mobileOpen) && <span>{label}</span>}
           </NavLink>
         ))}
@@ -100,6 +106,9 @@ export default function Sidebar({ mobileOpen = false, closeMobile }) {
         {user?.role === 'admin' && (
           <>
             <div className="nav-divider" />
+            <div className="nav-group-title">
+              {(!collapsed || mobileOpen) && <span>Administration</span>}
+            </div>
             {adminItems.map(({ to, icon: Icon, label }) => (
               <NavLink
                 key={to}
@@ -107,7 +116,7 @@ export default function Sidebar({ mobileOpen = false, closeMobile }) {
                 onClick={handleNavClick}
                 className={({ isActive }) => `nav-item admin-item ${isActive ? 'active' : ''}`}
               >
-                <Icon size={18} />
+                <Icon size={17} strokeWidth={2} />
                 {(!collapsed || mobileOpen) && <span>{label}</span>}
               </NavLink>
             ))}
@@ -117,8 +126,8 @@ export default function Sidebar({ mobileOpen = false, closeMobile }) {
 
       <div className="sidebar-footer">
         <button className="nav-item logout-btn" onClick={handleLogout}>
-          <LogOut size={18} />
-          {(!collapsed || mobileOpen) && <span>Logout</span>}
+          <LogOut size={17} strokeWidth={2} />
+          {(!collapsed || mobileOpen) && <span>Sign Out</span>}
         </button>
       </div>
     </aside>

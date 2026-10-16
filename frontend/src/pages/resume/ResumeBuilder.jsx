@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getResume, updateResume } from '../../services/api';
 import toast from 'react-hot-toast';
-import { Plus, Trash2, Save } from 'lucide-react';
+import { Plus, Trash2, Save, FileText } from 'lucide-react';
 import './ResumeBuilder.css';
 
 const TABS = ['Personal', 'Summary', 'Education', 'Experience', 'Skills', 'Projects', 'Certifications'];
@@ -49,8 +49,13 @@ export default function ResumeBuilder() {
     <div className="resume-builder animate-fade-in">
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div className="page-header" style={{ margin: 0 }}>
-          <h1>📄 Resume Builder</h1>
-          <p>Build a professional resume section by section</p>
+          <div className="page-header-row">
+            <div className="header-icon-box"><FileText size={18} strokeWidth={2.4} /></div>
+            <div>
+              <h1>Executive Resume Builder</h1>
+              <p>Structure and articulate your career profile section by section</p>
+            </div>
+          </div>
         </div>
         <button onClick={handleSave} className="btn btn-primary" disabled={saving}>
           {saving ? <><span className="spinner-sm" />Saving...</> : <><Save size={16} />Save Resume</>}

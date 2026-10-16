@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { login } from '../../services/api';
 import toast from 'react-hot-toast';
-import { Mail, Lock, Eye, EyeOff, Zap, AlertCircle, AlertTriangle, CheckCircle2, UserPlus, ShieldCheck } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Compass, AlertCircle, AlertTriangle, CheckCircle2, UserPlus, ShieldCheck } from 'lucide-react';
 import './Auth.css';
 
 export default function Login() {
@@ -47,7 +47,7 @@ export default function Login() {
     try {
       const { data } = await login(form);
       loginUser(data);
-      toast.success(`Welcome back, ${data.name}! 👋`);
+      toast.success(`Welcome back, ${data.name}.`);
       navigate(data.role === 'admin' ? '/admin' : '/dashboard');
     } catch (err) {
       const status = err.response?.status;
@@ -101,20 +101,15 @@ export default function Login() {
 
   return (
     <div className="auth-page">
-      <div className="auth-bg">
-        <div className="auth-glow glow-1" />
-        <div className="auth-glow glow-2" />
-        <div className="auth-glow glow-3" />
-      </div>
       <div className="auth-container animate-fade-in">
         <div className="auth-brand">
-          <div className="auth-logo"><Zap size={28} /></div>
-          <h1>CareerAI</h1>
-          <p>Your AI-powered career enhancement platform</p>
+          <div className="auth-logo"><Compass size={24} strokeWidth={2.4} /></div>
+          <h1>CareerOS</h1>
+          <p>Career Intelligence Platform</p>
         </div>
         <div className="auth-card">
           <h2>Welcome back</h2>
-          <p className="auth-subtitle">Sign in with your database credentials</p>
+          <p className="auth-subtitle">Enter your credentials to access your workspace</p>
 
           {/* Dynamic Database Feedback Alert */}
           {alert && (

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
-import { Menu, Zap } from 'lucide-react';
+import { Menu, Compass } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import './Layout.css';
 
@@ -42,9 +42,9 @@ export default function Layout({ children }) {
 
         <div className="mobile-brand">
           <div className="mobile-brand-icon">
-            <Zap size={18} />
+            <Compass size={18} strokeWidth={2.4} />
           </div>
-          <span className="mobile-brand-text">CareerAI</span>
+          <span className="mobile-brand-text">CareerOS</span>
         </div>
 
         <div className="mobile-user-avatar">

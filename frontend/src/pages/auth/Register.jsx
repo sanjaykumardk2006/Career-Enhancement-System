@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { register } from '../../services/api';
 import toast from 'react-hot-toast';
-import { User, Mail, Lock, Eye, EyeOff, Zap, ShieldCheck } from 'lucide-react';
+import { User, Mail, Lock, Eye, EyeOff, Compass, ShieldCheck } from 'lucide-react';
 import './Auth.css';
 
 export default function Register() {
@@ -42,7 +42,7 @@ export default function Register() {
         password: form.password,
       });
 
-      toast.success('Account successfully registered in database! 🎉');
+      toast.success('Account successfully registered.');
       navigate('/login', {
         state: {
           email: form.email.trim(),
@@ -58,20 +58,15 @@ export default function Register() {
 
   return (
     <div className="auth-page">
-      <div className="auth-bg">
-        <div className="auth-glow glow-1" />
-        <div className="auth-glow glow-2" />
-        <div className="auth-glow glow-3" />
-      </div>
       <div className="auth-container animate-fade-in">
         <div className="auth-brand">
-          <div className="auth-logo"><Zap size={28} /></div>
-          <h1>CareerAI</h1>
-          <p>Your AI-powered career enhancement platform</p>
+          <div className="auth-logo"><Compass size={24} strokeWidth={2.4} /></div>
+          <h1>CareerOS</h1>
+          <p>Career Intelligence Platform</p>
         </div>
         <div className="auth-card">
           <h2>Create your account</h2>
-          <p className="auth-subtitle">Sign up as a student or job seeker to get started</p>
+          <p className="auth-subtitle">Sign up to launch your career workspace</p>
 
           <form onSubmit={handleSubmit} className="auth-form">
 

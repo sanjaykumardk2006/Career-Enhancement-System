@@ -40,7 +40,7 @@ export default function AdminLogin() {
       }
 
       loginUser(data);
-      toast.success(`Welcome Administrator, ${data.name}! 🛡️`);
+      toast.success(`Administrator authenticated: ${data.name}`);
       navigate('/admin');
     } catch (err) {
       const msg = err.response?.data?.message || 'Authentication failed. Please verify credentials.';
@@ -57,19 +57,12 @@ export default function AdminLogin() {
 
   return (
     <div className="auth-page">
-      <div className="auth-bg">
-        <div className="auth-glow" style={{ width: 500, height: 500, background: '#f59e0b', top: -100, right: -100, opacity: 0.08 }} />
-        <div className="auth-glow" style={{ width: 450, height: 450, background: '#d97706', bottom: -100, left: -100, opacity: 0.06 }} />
-      </div>
-
       <div className="auth-container animate-fade-in">
         <div className="auth-brand">
-          <div className="auth-logo" style={{ background: 'linear-gradient(135deg, #d97706, #f59e0b)', boxShadow: '0 0 30px rgba(245, 158, 11, 0.4)' }}>
-            <ShieldCheck size={32} />
+          <div className="auth-logo" style={{ borderColor: 'rgba(217, 119, 6, 0.45)', color: '#fbbf24' }}>
+            <ShieldCheck size={26} strokeWidth={2.4} />
           </div>
-          <h1 style={{ background: 'linear-gradient(135deg, #f59e0b, #fbbf24)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            CareerAI Admin
-          </h1>
+          <h1>CareerOS Admin</h1>
           <p>Administrative Control Gateway</p>
         </div>
 

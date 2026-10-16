@@ -50,8 +50,15 @@ export default function ResumeUpload() {
   return (
     <div className="animate-fade-in" style={{ maxWidth: 900 }}>
       <div className="page-header">
-        <h1>📤 Resume Upload & AI Analysis</h1>
-        <p>Upload your resume and get instant AI-powered feedback</p>
+        <div className="page-header-row">
+          <div className="header-icon-box">
+            <Upload size={18} strokeWidth={2.4} />
+          </div>
+          <div>
+            <h1>Resume Intelligence & Audit</h1>
+            <p>Upload your CV for structural parsing, ATS keyword benchmarking, and executive scoring</p>
+          </div>
+        </div>
       </div>
 
       {/* Upload Zone */}

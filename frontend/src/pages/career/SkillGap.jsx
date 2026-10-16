@@ -31,8 +31,13 @@ export default function SkillGap() {
   return (
     <div className="animate-fade-in" style={{ maxWidth: 900 }}>
       <div className="page-header">
-        <h1>📊 Skill Gap Analysis</h1>
-        <p>Discover which skills you need to develop to reach your career goal</p>
+        <div className="page-header-row">
+          <div className="header-icon-box"><BookOpen size={18} strokeWidth={2.4} /></div>
+          <div>
+            <h1>Skill Gap Matrix</h1>
+            <p>Benchmark your current technical profile against market requirements for your target role</p>
+          </div>
+        </div>
       </div>
 
       <div className="card mb-2">
@@ -47,7 +52,7 @@ export default function SkillGap() {
             <input value={form.currentSkills} onChange={(e) => setForm({ ...form, currentSkills: e.target.value })} className="form-input" placeholder="e.g. JavaScript, React, Python, SQL" />
           </div>
           <button onClick={handleAnalyze} className="btn btn-primary" disabled={loading} style={{ alignSelf: 'flex-start' }}>
-            {loading ? <><span className="spinner-sm" />Analyzing with AI...</> : <><Search size={16} />Analyze Skills</>}
+            {loading ? <><span className="spinner-sm" />Analyzing Profile...</> : <><Search size={16} />Analyze Skills</>}
           </button>
         </div>
       </div>
@@ -55,7 +60,7 @@ export default function SkillGap() {
       {loading && (
         <div className="loading-overlay">
           <div className="spinner" />
-          <p>AI is analyzing your skill gaps...</p>
+          <p>Analyzing technical gaps and proficiency deltas...</p>
         </div>
       )}
 
@@ -63,8 +68,8 @@ export default function SkillGap() {
         <>
           {/* Readiness Score */}
           <div className="card mb-2" style={{ textAlign: 'center' }}>
-            <p style={{ color: 'var(--text-muted)', marginBottom: '0.75rem' }}>Overall Career Readiness</p>
-            <div style={{ fontSize: '3.5rem', fontWeight: 900, fontFamily: 'Outfit', background: 'linear-gradient(135deg, var(--primary-light), var(--secondary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+            <p style={{ color: 'var(--text-muted)', marginBottom: '0.75rem', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Overall Career Readiness</p>
+            <div style={{ fontSize: '3.75rem', fontWeight: 800, fontFamily: 'Plus Jakarta Sans', color: 'var(--primary-light)', letterSpacing: '-0.03em' }}>
               {data.overallReadiness}%
             </div>
             <div className="progress-bar" style={{ maxWidth: 300, margin: '1rem auto 0' }}>

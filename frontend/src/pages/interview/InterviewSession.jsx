@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getInterview, submitAnswers } from '../../services/api';
 import toast from 'react-hot-toast';
-import { Send, ChevronLeft, ChevronRight, Star, CheckCircle } from 'lucide-react';
+import { Send, ChevronLeft, ChevronRight, Star, CheckCircle, Mic } from 'lucide-react';
 
 export default function InterviewSession() {
   const { id } = useParams();
@@ -30,7 +30,7 @@ export default function InterviewSession() {
       const { data } = await submitAnswers(id, { answers: answerArr });
       setInterview(data);
       setSubmitted(true);
-      toast.success('Interview completed! 🎉 Check your feedback below.');
+      toast.success('Interview evaluation complete.');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Submission failed');
     } finally {
@@ -46,11 +46,18 @@ export default function InterviewSession() {
   return (
     <div className="animate-fade-in" style={{ maxWidth: 800 }}>
       <div className="page-header">
-        <h1>🎤 {interview.jobRole} Interview</h1>
-        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-          <span className="badge badge-primary">{interview.difficulty}</span>
-          <span className="badge badge-muted">{interview.questions.length} Questions</span>
-          {submitted && <span className="badge badge-success">Completed</span>}
+        <div className="page-header-row">
+          <div className="header-icon-box">
+            <Mic size={18} strokeWidth={2.4} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <h1>{interview.jobRole} Evaluation</h1>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.35rem' }}>
+              <span className="badge badge-primary">{interview.difficulty}</span>
+              <span className="badge badge-muted">{interview.questions.length} Inquiries</span>
+              {submitted && <span className="badge badge-success">Completed</span>}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -70,10 +77,10 @@ export default function InterviewSession() {
           {/* Question */}
           <div className="card mb-2">
             <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
-              <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg, var(--primary), var(--secondary))', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, flexShrink: 0 }}>
+              <div style={{ width: 32, height: 32, background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-light)', fontWeight: 700, flexShrink: 0, fontSize: '0.85rem' }}>
                 {currentQ + 1}
               </div>
-              <p style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--text-primary)', lineHeight: 1.6, paddingTop: '0.4rem' }}>
+              <p style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--text-primary)', lineHeight: 1.6, paddingTop: '0.2rem' }}>
                 {interview.questions[currentQ]?.question}
               </p>
             </div>
@@ -108,7 +115,7 @@ export default function InterviewSession() {
       ) : (
         <>
           {/* Results */}
-          <div className="card mb-2" style={{ textAlign: 'center', background: 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(6,182,212,0.08))' }}>
+          <div className="card mb-2" style={{ textAlign: 'center', background: 'var(--bg-card)', border: '1px solid var(--border-light)' }}>
             <CheckCircle size={48} style={{ color: 'var(--success)', margin: '0 auto 1rem', display: 'block' }} />
             <p style={{ color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Overall Score</p>
             <div style={{ fontSize: '3.5rem', fontWeight: 900, fontFamily: 'Outfit', color: scoreColor(interview.overallScore / 10) }}>{interview.overallScore}/100</div>

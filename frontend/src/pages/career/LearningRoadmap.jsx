@@ -38,7 +38,7 @@ export default function LearningRoadmap() {
       const { data } = await generateRoadmap({ careerGoal: form.careerGoal, currentSkills: skills, skillGaps: gaps });
       setRoadmap(data);
       setExpandedPhases({ 0: true });
-      toast.success('Learning roadmap generated! 🗺️');
+      toast.success('Curriculum roadmap generated.');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to generate roadmap');
     } finally {
@@ -50,7 +50,7 @@ export default function LearningRoadmap() {
     try {
       const { data } = await updateTopicProgress({ phaseIndex, topicIndex, completed: !currentState });
       setRoadmap(data);
-      toast.success(!currentState ? '✅ Topic completed!' : 'Topic marked incomplete');
+      toast.success(!currentState ? 'Topic completed.' : 'Topic marked incomplete.');
     } catch { toast.error('Failed to update progress'); }
   };
 
@@ -60,17 +60,20 @@ export default function LearningRoadmap() {
     <div className="animate-fade-in" style={{ maxWidth: 900 }}>
       <div className="page-header">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
-            <h1>🗺️ Learning Roadmap</h1>
-            <p>Your personalized step-by-step learning path</p>
+          <div className="page-header-row">
+            <div className="header-icon-box"><Compass size={18} strokeWidth={2.4} /></div>
+            <div>
+              <h1>Curriculum Roadmap</h1>
+              <p>Milestone-based competency development path calibrated to your target trajectory</p>
+            </div>
           </div>
           {roadmap && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <div style={{ textAlign: 'right' }}>
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Overall Progress</p>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Curriculum Progress</p>
                 <p style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--primary-light)' }}>{roadmap.overallProgress}%</p>
               </div>
-              <div style={{ width: 60, height: 60, position: 'relative' }}>
+              <div style={{ width: 56, height: 56, position: 'relative' }}>
                 <svg viewBox="0 0 36 36" style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }}>
                   <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--border)" strokeWidth="3" />
                   <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--primary)" strokeWidth="3" strokeDasharray={`${roadmap.overallProgress} ${100 - roadmap.overallProgress}`} strokeLinecap="round" />
@@ -84,7 +87,7 @@ export default function LearningRoadmap() {
       {/* Generate Form */}
       <div className="card mb-2">
         <h4 style={{ marginBottom: '1rem' }}>
-          {roadmap ? '🔄 Regenerate Roadmap' : '✨ Generate Your Roadmap'}
+          {roadmap ? 'Recalibrate Curriculum Roadmap' : 'Generate Curriculum Roadmap'}
         </h4>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div className="grid-2">

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { updateProfile } from '../../services/api';
 import toast from 'react-hot-toast';
-import { Save, Plus, X } from 'lucide-react';
+import { Save, Plus, X, User } from 'lucide-react';
 
 export default function Profile() {
   const { user, updateUser } = useAuth();
@@ -33,7 +33,7 @@ export default function Profile() {
     try {
       const { data } = await updateProfile(form);
       updateUser(data);
-      toast.success('Profile updated successfully!');
+      toast.success('Profile updated successfully.');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Update failed');
     } finally {
@@ -44,19 +44,26 @@ export default function Profile() {
   return (
     <div className="animate-fade-in" style={{ maxWidth: 800 }}>
       <div className="page-header">
-        <h1>My Profile</h1>
-        <p>Manage your personal information and career preferences</p>
+        <div className="page-header-row">
+          <div className="header-icon-box">
+            <User size={18} strokeWidth={2.4} />
+          </div>
+          <div>
+            <h1>Executive Profile & Identity</h1>
+            <p>Manage authentication credentials, contact coordinates, and domain competencies</p>
+          </div>
+        </div>
       </div>
 
       {/* Avatar Card */}
       <div className="card mb-2" style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
-        <div style={{ width: 72, height: 72, background: 'linear-gradient(135deg, var(--primary), var(--secondary))', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 800, color: 'white', flexShrink: 0 }}>
+        <div style={{ width: 68, height: 68, background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.75rem', fontWeight: 800, color: 'var(--primary-light)', flexShrink: 0, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)' }}>
           {user?.name?.[0]?.toUpperCase()}
         </div>
         <div>
           <h3 style={{ marginBottom: '0.25rem' }}>{user?.name}</h3>
-          <p style={{ fontSize: '0.875rem', marginBottom: '0.25rem' }}>{user?.email}</p>
-          <span className={`badge badge-${user?.role === 'admin' ? 'warning' : 'primary'}`}>{user?.role}</span>
+          <p style={{ fontSize: '0.875rem', marginBottom: '0.4rem', color: 'var(--text-muted)' }}>{user?.email}</p>
+          <span className={`badge badge-${user?.role === 'admin' ? 'warning' : 'primary'}`}>{user?.role === 'admin' ? 'Platform Administrator' : 'Verified Member'}</span>
         </div>
       </div>
 

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { careerChat } from '../../services/api';
 import toast from 'react-hot-toast';
-import { Send, Bot, User, Sparkles } from 'lucide-react';
+import { Send, Bot, User, Sparkles, MessageSquare } from 'lucide-react';
 import './Chatbot.css';
 
 const STARTER_QUESTIONS = [
@@ -17,7 +17,7 @@ export default function CareerChatbot() {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: `Hi ${user?.name?.split(' ')[0] || 'there'}! 👋 I'm **CareerBot**, your AI career advisor. I can help you with career guidance, interview prep, resume tips, and skill development. What would you like to know?`,
+      content: `Hello ${user?.name?.split(' ')[0] || 'there'}. I am your **CareerOS Copilot**. I can assist you with technical interview preparation, strategic skill roadmaps, compensation benchmarks, and resume optimization. What strategic topic would you like to explore today?`,
     },
   ]);
   const [input, setInput] = useState('');
@@ -56,8 +56,13 @@ export default function CareerChatbot() {
   return (
     <div className="chatbot-page animate-fade-in">
       <div className="page-header">
-        <h1><Bot size={28} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 8 }} /> AI Career Chatbot</h1>
-        <p>Get personalized career advice powered by Google Gemini AI</p>
+        <div className="page-header-row">
+          <div className="header-icon-box"><MessageSquare size={18} strokeWidth={2.4} /></div>
+          <div>
+            <h1>Career Copilot</h1>
+            <p>Interactive career intelligence powered by Google Gemini architecture</p>
+          </div>
+        </div>
       </div>
 
       <div className="chatbot-container">

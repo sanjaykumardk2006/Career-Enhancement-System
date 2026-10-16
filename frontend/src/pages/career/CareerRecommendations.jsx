@@ -53,13 +53,16 @@ export default function CareerRecommendations() {
     <div className="animate-fade-in" style={{ maxWidth: 900 }}>
       <div className="page-header">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
-            <h1>🤖 AI Career Recommendations</h1>
-            <p>Personalized career paths based on your profile and AI analysis</p>
+          <div className="page-header-row">
+            <div className="header-icon-box"><Brain size={18} strokeWidth={2.4} /></div>
+            <div>
+              <h1>Career Intelligence & Pathways</h1>
+              <p>Personalized market trajectory analysis calibrated to your profile and competencies</p>
+            </div>
           </div>
           <button onClick={fetchRecommendations} className="btn btn-secondary" disabled={loading}>
-            <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-            {loading ? 'Analyzing...' : 'Refresh'}
+            <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
+            {loading ? 'Analyzing...' : 'Recalibrate'}
           </button>
         </div>
       </div>

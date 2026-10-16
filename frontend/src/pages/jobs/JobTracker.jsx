@@ -86,8 +86,15 @@ export default function JobTracker() {
     <div className="animate-fade-in" style={{ maxWidth: 1100 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div className="page-header" style={{ margin: 0 }}>
-          <h1>💼 Job Application Tracker</h1>
-          <p>Track all your job applications in one place</p>
+          <div className="page-header-row">
+            <div className="header-icon-box">
+              <Briefcase size={18} strokeWidth={2.4} />
+            </div>
+            <div>
+              <h1>Pipeline & Application Tracker</h1>
+              <p>Active interview stages, offers, and opportunity lifecycle</p>
+            </div>
+          </div>
         </div>
         <button onClick={() => openModal()} className="btn btn-primary"><Plus size={16} />Add Application</button>
       </div>

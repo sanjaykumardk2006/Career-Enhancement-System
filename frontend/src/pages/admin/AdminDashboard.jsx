@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { adminGetStats } from '../../services/api';
 import toast from 'react-hot-toast';
-import { Users, Briefcase, Mic, FileText, Clock } from 'lucide-react';
+import { Users, Briefcase, Mic, FileText, Clock, ShieldCheck } from 'lucide-react';
 import { Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 const STATUS_COLORS = { Applied: '#6366f1', Screening: '#f59e0b', Interview: '#06b6d4', Offer: '#10b981', Rejected: '#ef4444', Withdrawn: '#6060a0' };
@@ -15,7 +15,7 @@ export default function AdminDashboard() {
       .catch(() => { toast.error('Failed to load stats'); setLoading(false); });
   }, []);
 
-  if (loading) return <div className="loading-overlay"><div className="spinner" /><p>Loading admin dashboard...</p></div>;
+  if (loading) return <div className="loading-overlay"><div className="spinner" /><p>Loading executive telemetry...</p></div>;
   if (!stats) return null;
 
   const pieData = stats.jobsByStatus?.map((s) => ({ name: s._id, value: s.count, color: STATUS_COLORS[s._id] || '#6060a0' }));
@@ -23,8 +23,15 @@ export default function AdminDashboard() {
   return (
     <div className="animate-fade-in" style={{ maxWidth: 1100 }}>
       <div className="page-header">
-        <h1>🛡️ Admin Dashboard</h1>
-        <p>Platform overview and analytics</p>
+        <div className="page-header-row">
+          <div className="header-icon-box">
+            <ShieldCheck size={18} strokeWidth={2.4} />
+          </div>
+          <div>
+            <h1>Executive Console</h1>
+            <p>Real-time platform telemetry, user engagement metrics, and administrative oversight</p>
+          </div>
+        </div>
       </div>
 
       {/* Stats Grid */}
@@ -91,7 +98,7 @@ export default function AdminDashboard() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {stats.recentUsers?.map((u) => (
             <div key={u._id} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.75rem 1rem', background: 'var(--bg-input)', borderRadius: 'var(--radius-md)' }}>
-              <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg, var(--primary), var(--secondary))', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 700, fontSize: '0.875rem', flexShrink: 0 }}>
+              <div style={{ width: 34, height: 34, background: 'var(--bg-card)', border: '1px solid var(--border-light)', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-light)', fontWeight: 700, fontSize: '0.85rem', flexShrink: 0 }}>
                 {u.name[0]?.toUpperCase()}
               </div>
               <div style={{ flex: 1 }}>

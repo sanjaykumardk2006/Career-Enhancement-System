@@ -18,7 +18,7 @@ export default function MockInterview() {
     setLoading(true);
     try {
       const { data } = await startInterview({ jobRole: role, difficulty: form.difficulty });
-      toast.success('Interview started! Good luck! 🍀');
+      toast.success('Interview simulation initialized.');
       navigate(`/interview/${data._id}`);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to start interview');
@@ -30,12 +30,19 @@ export default function MockInterview() {
   return (
     <div className="animate-fade-in" style={{ maxWidth: 750 }}>
       <div className="page-header">
-        <h1>🎤 AI Mock Interview</h1>
-        <p>Practice with AI-generated interview questions and get detailed feedback</p>
+        <div className="page-header-row">
+          <div className="header-icon-box">
+            <Mic size={18} strokeWidth={2.4} />
+          </div>
+          <div>
+            <h1>Mock Interview Studio</h1>
+            <p>Real-time conversational evaluation, technical probing, and structured rubrics</p>
+          </div>
+        </div>
       </div>
 
       <div className="card mb-2">
-        <h4 style={{ marginBottom: '1.25rem' }}>Select Job Role</h4>
+        <h4 style={{ marginBottom: '1.25rem' }}>Select Target Role</h4>
         <div className="roles-grid">
           {JOB_ROLES.map((role) => (
             <button key={role} onClick={() => { setForm({ ...form, jobRole: role }); setCustom(''); }}
@@ -56,20 +63,25 @@ export default function MockInterview() {
       </div>
 
       <div className="card mb-2">
-        <h4 style={{ marginBottom: '1.25rem' }}>Difficulty Level</h4>
+        <h4 style={{ marginBottom: '1.25rem' }}>Assessment Rigor</h4>
         <div style={{ display: 'flex', gap: '0.75rem' }}>
-          {['Easy', 'Medium', 'Hard'].map((d) => (
-            <button key={d} onClick={() => setForm({ ...form, difficulty: d })}
+          {[
+            { level: 'Easy', label: 'Associate', q: '3 Questions', desc: 'Core fundamentals' },
+            { level: 'Medium', label: 'Mid-Senior', q: '5 Questions', desc: 'System reasoning' },
+            { level: 'Hard', label: 'Staff / Lead', q: '7 Questions', desc: 'Deep dive & edge cases' }
+          ].map((item) => (
+            <button key={item.level} onClick={() => setForm({ ...form, difficulty: item.level })}
               style={{
-                flex: 1, padding: '1rem', borderRadius: 'var(--radius-lg)', border: `1px solid ${form.difficulty === d ? 'var(--primary)' : 'var(--border)'}`,
-                background: form.difficulty === d ? 'rgba(99,102,241,0.12)' : 'var(--bg-input)',
-                cursor: 'pointer', transition: 'all 0.2s', textAlign: 'center',
+                flex: 1, padding: '1rem', borderRadius: 'var(--radius-md)', border: `1px solid ${form.difficulty === item.level ? 'var(--primary)' : 'var(--border)'}`,
+                background: form.difficulty === item.level ? 'rgba(99,102,241,0.12)' : 'var(--bg-input)',
+                cursor: 'pointer', transition: 'all 0.2s', textAlign: 'left',
               }}>
-              <div style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>{d === 'Easy' ? '😊' : d === 'Medium' ? '🤔' : '🔥'}</div>
-              <p style={{ fontWeight: 600, color: form.difficulty === d ? 'var(--primary-light)' : 'var(--text-secondary)', fontSize: '0.875rem' }}>{d}</p>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-                {d === 'Easy' ? '3 questions' : d === 'Medium' ? '5 questions' : '7 questions'}
-              </p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: form.difficulty === item.level ? 'var(--primary-light)' : 'var(--text-muted)' }}>{item.level}</span>
+                <span className="badge badge-primary" style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem' }}>{item.q}</span>
+              </div>
+              <p style={{ fontWeight: 600, color: form.difficulty === item.level ? '#fff' : 'var(--text-primary)', fontSize: '0.9rem' }}>{item.label}</p>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>{item.desc}</p>
             </button>
           ))}
         </div>

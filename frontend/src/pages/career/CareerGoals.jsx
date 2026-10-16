@@ -38,8 +38,13 @@ export default function CareerGoals() {
   return (
     <div className="animate-fade-in" style={{ maxWidth: 800 }}>
       <div className="page-header">
-        <h1>🎯 Career Goal Selection</h1>
-        <p>Choose your target career path to get personalized AI guidance and roadmap</p>
+        <div className="page-header-row">
+          <div className="header-icon-box"><Target size={18} strokeWidth={2.4} /></div>
+          <div>
+            <h1>Target Career Path</h1>
+            <p>Calibrate your target trajectory to generate specialized gap analysis and learning roadmaps</p>
+          </div>
+        </div>
       </div>
 
       <div className="card mb-2">
