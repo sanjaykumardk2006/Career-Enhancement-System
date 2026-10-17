@@ -27,7 +27,7 @@ const updateResume = async (req, res) => {
     const resume = await Resume.findOneAndUpdate(
       { user: req.user._id },
       { ...req.body },
-      { new: true, upsert: true }
+      { returnDocument: 'after', upsert: true }
     );
     res.json(resume);
   } catch (error) {
@@ -44,7 +44,7 @@ const uploadResume = async (req, res) => {
     const resume = await Resume.findOneAndUpdate(
       { user: req.user._id },
       { uploadedFile: req.file.filename },
-      { new: true, upsert: true }
+      { returnDocument: 'after', upsert: true }
     );
     res.json({ message: 'Resume uploaded successfully', filename: req.file.filename, resume });
   } catch (error) {

@@ -131,6 +131,8 @@ Include 3-4 phases with 3-5 topics each and 2-3 real resources per topic.`;
 
     const roadmapData = await generateJSON(prompt);
 
+    const phases = roadmapData.phases || roadmapData.roadmap || [];
+
     // Save to DB
     const roadmap = await LearningRoadmap.findOneAndUpdate(
       { user: req.user._id },
@@ -138,11 +140,11 @@ Include 3-4 phases with 3-5 topics each and 2-3 real resources per topic.`;
         user: req.user._id,
         careerGoal,
         skillGaps: skillGaps || [],
-        roadmap: roadmapData.phases,
+        roadmap: phases,
         overallProgress: 0,
         generatedAt: new Date(),
       },
-      { new: true, upsert: true }
+      { returnDocument: 'after', upsert: true }
     );
 
     res.json(roadmap);

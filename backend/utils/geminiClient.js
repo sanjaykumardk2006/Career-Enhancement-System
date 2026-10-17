@@ -87,27 +87,8 @@ const generateFallbackJSON = (prompt) => {
     };
   }
 
-  // 3. Skill Gap Analysis
-  if (lower.includes('skill gap') || lower.includes('missing skills') || lower.includes('currentskillsassessment')) {
-    return {
-      currentSkillsAssessment: [
-        { skill: 'Core Web Development (HTML/CSS/JS)', relevance: 'High', proficiencyNeeded: 'Advanced' },
-        { skill: 'React / Frontend Architecture', relevance: 'High', proficiencyNeeded: 'Intermediate' },
-        { skill: 'Backend API Development (Node/Express)', relevance: 'High', proficiencyNeeded: 'Intermediate' },
-        { skill: 'Database Management (MongoDB/SQL)', relevance: 'Medium', proficiencyNeeded: 'Intermediate' }
-      ],
-      missingSkills: [
-        { skill: 'Distributed System Architecture & Caching (Redis)', priority: 'Critical', estimatedLearningTime: '3 - 4 weeks' },
-        { skill: 'Automated Testing (Jest, Playwright, CI/CD)', priority: 'Important', estimatedLearningTime: '2 - 3 weeks' },
-        { skill: 'Containerization & Cloud Infrastructure (Docker & AWS)', priority: 'Important', estimatedLearningTime: '3 weeks' }
-      ],
-      overallReadiness: 76,
-      summary: 'You possess a solid foundation in modern full-stack development. Adding production testing, cloud deployment, and system architecture will make your profile stand out to top engineering teams.'
-    };
-  }
-
-  // 4. Learning Roadmap
-  if (lower.includes('learning roadmap') || lower.includes('phases')) {
+  // 3. Learning Roadmap (check before skill-gap because roadmap prompts mention skill gaps)
+  if (lower.includes('learning path designer') || lower.includes('phased learning roadmap') || lower.includes('topics each and 2-3 real resources')) {
     return {
       phases: [
         {
@@ -177,6 +158,25 @@ const generateFallbackJSON = (prompt) => {
     };
   }
 
+  // 4. Skill Gap Analysis
+  if (lower.includes('skill gap') || lower.includes('missing skills') || lower.includes('currentskillsassessment')) {
+    return {
+      currentSkillsAssessment: [
+        { skill: 'Core Web Development (HTML/CSS/JS)', relevance: 'High', proficiencyNeeded: 'Advanced' },
+        { skill: 'React / Frontend Architecture', relevance: 'High', proficiencyNeeded: 'Intermediate' },
+        { skill: 'Backend API Development (Node/Express)', relevance: 'High', proficiencyNeeded: 'Intermediate' },
+        { skill: 'Database Management (MongoDB/SQL)', relevance: 'Medium', proficiencyNeeded: 'Intermediate' }
+      ],
+      missingSkills: [
+        { skill: 'Distributed System Architecture & Caching (Redis)', priority: 'Critical', estimatedLearningTime: '3 - 4 weeks' },
+        { skill: 'Automated Testing (Jest, Playwright, CI/CD)', priority: 'Important', estimatedLearningTime: '2 - 3 weeks' },
+        { skill: 'Containerization & Cloud Infrastructure (Docker & AWS)', priority: 'Important', estimatedLearningTime: '3 weeks' }
+      ],
+      overallReadiness: 76,
+      summary: 'You possess a solid foundation in modern full-stack development. Adding production testing, cloud deployment, and system architecture will make your profile stand out to top engineering teams.'
+    };
+  }
+
   // 5. Mock Interview Questions
   if (lower.includes('interview question') || lower.includes('questions')) {
     return {
@@ -220,6 +220,27 @@ const generateFallbackContent = (prompt) => {
   return 'AI analysis completed successfully. Provide a valid Google Gemini API key in backend/.env for live real-time LLM inference.';
 };
 
+const parseJSONSafely = (text) => {
+  const cleaned = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+  try {
+    return JSON.parse(cleaned);
+  } catch (err) {
+    const firstBrace = cleaned.indexOf('{');
+    const lastBrace = cleaned.lastIndexOf('}');
+    if (firstBrace !== -1 && lastBrace > firstBrace) {
+      return JSON.parse(cleaned.substring(firstBrace, lastBrace + 1));
+    }
+    const firstBracket = cleaned.indexOf('[');
+    const lastBracket = cleaned.lastIndexOf(']');
+    if (firstBracket !== -1 && lastBracket > firstBracket) {
+      return JSON.parse(cleaned.substring(firstBracket, lastBracket + 1));
+    }
+    throw err;
+  }
+};
+
+const getModelName = () => process.env.GEMINI_MODEL || 'gemini-3.8-flash';
+
 const generateContent = async (prompt) => {
   const genAI = getGenAI();
   if (!genAI) {
@@ -228,7 +249,7 @@ const generateContent = async (prompt) => {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: getModelName() });
     const result = await model.generateContent(prompt);
     return result.response.text();
   } catch (error) {
@@ -245,12 +266,11 @@ const generateJSON = async (prompt) => {
   }
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: getModelName() });
     const fullPrompt = `${prompt}\n\nIMPORTANT: Respond ONLY with valid JSON, no markdown, no explanation, no code blocks.`;
     const result = await model.generateContent(fullPrompt);
     const text = result.response.text().trim();
-    const cleaned = text.replace(/^```json?\n?/i, '').replace(/```$/i, '').trim();
-    return JSON.parse(cleaned);
+    return parseJSONSafely(text);
   } catch (error) {
     console.warn(`⚠️ [Gemini API Warning] ${error.message}. Switching to contextual fallback response.`);
     return generateFallbackJSON(prompt);

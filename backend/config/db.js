@@ -3,6 +3,10 @@ const { MongoMemoryServer } = require('mongodb-memory-server');
 
 const connectDB = async () => {
   try {
+    if (mongoose.connection.readyState === 1) {
+      return;
+    }
+
     let uri = process.env.MONGO_URI || process.env.MONGODB_URI;
 
     // If the user hasn't configured a real database, use an in-memory database
