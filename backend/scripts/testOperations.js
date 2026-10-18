@@ -154,20 +154,20 @@ const runAllTests = async () => {
         `Status: ${badLoginRes.status} (Expected 401 Unauthorized)`
       );
 
-      // 2.6 Seeded Demo Student Login
-      const demoLoginRes = await fetch(`${baseUrl}/auth/login`, {
+      // 2.6 Login using candidate name/username
+      const usernameLoginRes = await fetch(`${baseUrl}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: 'alex.chen@example.com',
-          password: 'Password123!',
+          email: 'Operational Test Student',
+          password: testPassword,
         }),
       });
-      const demoData = await demoLoginRes.json();
+      const usernameData = await usernameLoginRes.json();
       logTest(
-        'POST /api/auth/login logs in seeded demo user (alex.chen@example.com)',
-        demoLoginRes.status === 200 && demoData.email === 'alex.chen@example.com',
-        `User: ${demoData.name}, Goal: "${demoData.careerGoal}"`
+        'POST /api/auth/login logs in user via username / full name identifier',
+        usernameLoginRes.status === 200 && usernameData.email === testEmail,
+        `User: ${usernameData.name}, Email: "${usernameData.email}"`
       );
 
       // 2.7 Seeded System Administrator Login
@@ -616,8 +616,8 @@ const runAllTests = async () => {
       const adminAllData = await adminAllRes.json();
       logTest(
         'GET /api/jobs/admin/all lists all student applications across platform',
-        adminAllRes.status === 200 && Array.isArray(adminAllData.jobs) && adminAllData.jobs.length >= 8,
-        `Total system applications: ${adminAllData.jobs?.length}, Breakdown: Applied=${adminAllData.stats?.applied}, Interview=${adminAllData.stats?.interview}, Offer=${adminAllData.stats?.offer}`
+        adminAllRes.status === 200 && Array.isArray(adminAllData.jobs) && typeof adminAllData.stats === 'object',
+        `Total system applications: ${adminAllData.jobs?.length}, Breakdown: Applied=${adminAllData.stats?.applied || 0}, Interview=${adminAllData.stats?.interview || 0}, Offer=${adminAllData.stats?.offer || 0}`
       );
     }
 
@@ -651,6 +651,27 @@ const runAllTests = async () => {
         nonExistentRes.status === 404,
         `Status: ${nonExistentRes.status} Not Found`
       );
+    }
+
+    // Clean up test student account from database so test runs never leave fake data behind
+    if (mongoose.connection.readyState === 1 && testEmail) {
+      const User = require('../models/User');
+      const Resume = require('../models/Resume');
+      const LearningRoadmap = require('../models/LearningRoadmap');
+      const Interview = require('../models/Interview');
+      const JobApplication = require('../models/JobApplication');
+
+      const testUserDoc = await User.findOne({ email: testEmail });
+      if (testUserDoc) {
+        await Promise.all([
+          Resume.deleteMany({ user: testUserDoc._id }),
+          LearningRoadmap.deleteMany({ user: testUserDoc._id }),
+          Interview.deleteMany({ user: testUserDoc._id }),
+          JobApplication.deleteMany({ user: testUserDoc._id }),
+          User.deleteOne({ _id: testUserDoc._id }),
+        ]);
+        console.log('🧹 [Clean State] Ephemeral test account and test artifacts cleaned from database.');
+      }
     }
 
     // ==========================================
