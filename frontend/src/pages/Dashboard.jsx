@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { getJobApplications, getInterviews, getRoadmap } from '../services/api';
 import {
   Brain, FileText, Mic, Briefcase, TrendingUp, BookOpen,
-  ChevronRight, Target, MessageSquare, ArrowUpRight
+  ChevronRight, Target, MessageSquare, ArrowUpRight, ShieldCheck
 } from 'lucide-react';
 import './Dashboard.css';
 
@@ -64,6 +64,65 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard animate-fade-in">
+      {/* Administrator Simulator Banner */}
+      {user?.role === 'admin' && (
+        <div
+          style={{
+            background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(217, 119, 6, 0.08))',
+            border: '1px solid rgba(245, 158, 11, 0.35)',
+            borderRadius: 'var(--radius-lg)',
+            padding: '1rem 1.25rem',
+            marginBottom: '1.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '1rem',
+            flexWrap: 'wrap',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+            <div
+              style={{
+                width: 36,
+                height: 36,
+                borderRadius: 'var(--radius-md)',
+                background: 'rgba(245, 158, 11, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#fbbf24',
+                flexShrink: 0,
+              }}
+            >
+              <ShieldCheck size={20} />
+            </div>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#fbbf24' }}>
+                Administrator Mode: Student Portal Simulator
+              </div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                You are previewing the platform through candidate eyes. To govern users, inspect portfolios, or review institutional metrics, switch to Executive Console.
+              </div>
+            </div>
+          </div>
+          <Link
+            to="/admin"
+            className="btn btn-primary btn-sm"
+            style={{
+              background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+              borderColor: '#f59e0b',
+              color: '#000',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+            }}
+          >
+            Open Executive Console <ArrowUpRight size={14} />
+          </Link>
+        </div>
+      )}
+
       {/* Hero Banner */}
       <div className="dashboard-hero">
         <div className="hero-content">

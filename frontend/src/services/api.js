@@ -47,4 +47,10 @@ export const deleteJobApplication = (id) => API.delete(`/jobs/${id}`);
 export const adminGetStats = () => API.get('/jobs/admin/stats');
 export const adminGetAllApplications = () => API.get('/jobs/admin/all');
 
+// Admin User Management
+export const adminGetUsers = (params) => API.get('/auth/admin/users', { params });
+export const adminGetUserById = (id) => API.get(`/auth/admin/users/${id}`);
+export const adminUpdateUserRole = (id, data) => API.put(`/auth/admin/users/${id}/role`, data);
+export const adminDeleteUser = (id) => API.delete(`/auth/admin/users/${id}`);
+
 export default API;

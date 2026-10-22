@@ -1,4 +1,8 @@
 const User = require('../models/User');
+const Resume = require('../models/Resume');
+const Interview = require('../models/Interview');
+const JobApplication = require('../models/JobApplication');
+const LearningRoadmap = require('../models/LearningRoadmap');
 const generateToken = require('../utils/generateToken');
 
 // @desc    Register new user (Students / Candidates only)
@@ -219,4 +223,161 @@ const updateProfile = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, registerAdmin, loginUser, getMe, updateProfile };
+// @desc    Admin - Get all registered users with search and role filtering
+// @route   GET /api/auth/admin/users
+// @access  Private/Admin
+const adminGetUsers = async (req, res) => {
+  try {
+    const { search = '', role = 'all' } = req.query;
+
+    const query = {};
+    if (role && role !== 'all') {
+      query.role = role;
+    }
+
+    if (search.trim()) {
+      const escaped = search.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      query.$or = [
+        { name: new RegExp(escaped, 'i') },
+        { email: new RegExp(escaped, 'i') },
+        { careerGoal: new RegExp(escaped, 'i') },
+        { skills: new RegExp(escaped, 'i') },
+      ];
+    }
+
+    const users = await User.find(query)
+      .select('-password')
+      .sort({ createdAt: -1 });
+
+    // Aggregate counts for quick stats
+    const totalUsers = await User.countDocuments();
+    const studentCount = await User.countDocuments({ role: 'student' });
+    const adminCount = await User.countDocuments({ role: 'admin' });
+
+    res.json({
+      users,
+      stats: {
+        total: totalUsers,
+        students: studentCount,
+        admins: adminCount,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Admin - Inspect full user portfolio dossier
+// @route   GET /api/auth/admin/users/:id
+// @access  Private/Admin
+const adminGetUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found in system' });
+    }
+
+    // Fetch user's related data
+    const [resume, interviews, applications, roadmap] = await Promise.all([
+      Resume.findOne({ user: user._id }),
+      Interview.find({ user: user._id }).sort({ createdAt: -1 }),
+      JobApplication.find({ user: user._id }).sort({ appliedDate: -1 }),
+      LearningRoadmap.findOne({ user: user._id }),
+    ]);
+
+    res.json({
+      user,
+      portfolio: {
+        resume,
+        interviews,
+        applications,
+        roadmap,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Admin - Update user role
+// @route   PUT /api/auth/admin/users/:id/role
+// @access  Private/Admin
+const adminUpdateUserRole = async (req, res) => {
+  try {
+    const { role } = req.body;
+    if (!role || !['student', 'admin'].includes(role)) {
+      return res.status(400).json({ message: 'Role must be either "student" or "admin"' });
+    }
+
+    const targetUser = await User.findById(req.params.id);
+    if (!targetUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Security check: Admin cannot demote themselves to avoid losing admin lock
+    if (targetUser._id.equals(req.user._id) && role !== 'admin') {
+      return res.status(400).json({
+        message: 'Security Guard: You cannot demote your own administrator account.',
+      });
+    }
+
+    targetUser.role = role;
+    await targetUser.save();
+
+    res.json({
+      message: `User role updated to ${role} successfully.`,
+      user: {
+        _id: targetUser._id,
+        name: targetUser.name,
+        email: targetUser.email,
+        role: targetUser.role,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Admin - Delete user and cascading data
+// @route   DELETE /api/auth/admin/users/:id
+// @access  Private/Admin
+const adminDeleteUser = async (req, res) => {
+  try {
+    const targetUser = await User.findById(req.params.id);
+    if (!targetUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Security check: Admin cannot delete themselves
+    if (targetUser._id.equals(req.user._id)) {
+      return res.status(400).json({
+        message: 'Security Guard: You cannot delete your own active administrator account.',
+      });
+    }
+
+    // Cascading cleanup
+    await Promise.all([
+      Resume.deleteMany({ user: targetUser._id }),
+      Interview.deleteMany({ user: targetUser._id }),
+      JobApplication.deleteMany({ user: targetUser._id }),
+      LearningRoadmap.deleteMany({ user: targetUser._id }),
+      User.findByIdAndDelete(targetUser._id),
+    ]);
+
+    res.json({ message: `User "${targetUser.name}" and associated records removed successfully.` });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = {
+  registerUser,
+  registerAdmin,
+  loginUser,
+  getMe,
+  updateProfile,
+  adminGetUsers,
+  adminGetUserById,
+  adminUpdateUserRole,
+  adminDeleteUser,
+};
