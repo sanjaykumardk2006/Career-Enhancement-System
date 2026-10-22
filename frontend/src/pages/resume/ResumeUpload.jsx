@@ -1,14 +1,34 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { uploadResume, analyzeResume } from '../../services/api';
+import { uploadResume, analyzeResume, getResume } from '../../services/api';
 import toast from 'react-hot-toast';
-import { Upload, Brain, CheckCircle, AlertCircle, Lightbulb, Tag } from 'lucide-react';
+import { Upload, Brain, CheckCircle, AlertCircle, Lightbulb, Tag, FileText, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function ResumeUpload() {
   const [uploading, setUploading] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
   const [uploaded, setUploaded] = useState(null);
   const [analysis, setAnalysis] = useState(null);
+  const [initialLoading, setInitialLoading] = useState(true);
+
+  useEffect(() => {
+    let ignore = false;
+    getResume()
+      .then(({ data }) => {
+        if (!ignore && data) {
+          if (data.uploadedFile) setUploaded(data.uploadedFile);
+          if (data.aiAnalysis?.score) setAnalysis(data.aiAnalysis);
+        }
+      })
+      .catch((err) => console.debug('Initial resume fetch error:', err?.message))
+      .finally(() => {
+        if (!ignore) setInitialLoading(false);
+      });
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const onDrop = useCallback(async (acceptedFiles) => {
     if (!acceptedFiles[0]) return;
@@ -17,9 +37,12 @@ export default function ResumeUpload() {
     formData.append('resume', file);
     setUploading(true);
     try {
-      await uploadResume(formData);
+      const res = await uploadResume(formData);
       setUploaded(file.name);
-      toast.success('Resume uploaded successfully!');
+      toast.success('Resume uploaded successfully! Click "Analyze with AI" below.');
+      if (res.data?.resume?.aiAnalysis) {
+        setAnalysis(res.data.resume.aiAnalysis);
+      }
     } catch (err) {
       toast.error(err.response?.data?.message || 'Upload failed');
     } finally {
@@ -46,6 +69,15 @@ export default function ResumeUpload() {
       setAnalyzing(false);
     }
   };
+
+  if (initialLoading) {
+    return (
+      <div className="loading-overlay">
+        <div className="spinner" />
+        <p>Loading resume intelligence...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="animate-fade-in" style={{ maxWidth: 900 }}>
@@ -179,6 +211,19 @@ export default function ResumeUpload() {
           </div>
         </div>
       )}
+      {/* Quick link to Builder */}
+      <div className="card mt-2" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', background: 'rgba(99,102,241,0.06)', borderColor: 'rgba(99,102,241,0.25)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <FileText size={22} style={{ color: 'var(--primary-light)' }} />
+          <div>
+            <h4 style={{ fontSize: '0.95rem' }}>Want to edit your structured resume?</h4>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Fine-tune education, experience, skills, and preview your ATS-ready CV.</p>
+          </div>
+        </div>
+        <Link to="/resume/builder" className="btn btn-secondary btn-sm">
+          Open Resume Builder <ArrowRight size={14} />
+        </Link>
+      </div>
     </div>
   );
 }

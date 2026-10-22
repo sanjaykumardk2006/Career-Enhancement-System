@@ -248,12 +248,14 @@ const generateContent = async (prompt) => {
     return generateFallbackContent(prompt);
   }
 
+  const primaryModel = getModelName();
   try {
-    const model = genAI.getGenerativeModel({ model: getModelName() });
+    const model = genAI.getGenerativeModel({ model: primaryModel });
     const result = await model.generateContent(prompt);
     return result.response.text();
   } catch (error) {
-    console.warn(`⚠️ [Gemini API Warning] ${error.message}. Switching to contextual fallback response.`);
+    const firstLine = error.message.split('\n')[0];
+    console.warn(`⚠️ [AI Contextual Fallback Active] ${firstLine}. Seamlessly serving career guidance.`);
     return generateFallbackContent(prompt);
   }
 };
@@ -265,14 +267,17 @@ const generateJSON = async (prompt) => {
     return generateFallbackJSON(prompt);
   }
 
+  const fullPrompt = `${prompt}\n\nIMPORTANT: Respond ONLY with valid JSON, no markdown, no explanation, no code blocks.`;
+  const primaryModel = getModelName();
+
   try {
-    const model = genAI.getGenerativeModel({ model: getModelName() });
-    const fullPrompt = `${prompt}\n\nIMPORTANT: Respond ONLY with valid JSON, no markdown, no explanation, no code blocks.`;
+    const model = genAI.getGenerativeModel({ model: primaryModel });
     const result = await model.generateContent(fullPrompt);
     const text = result.response.text().trim();
     return parseJSONSafely(text);
   } catch (error) {
-    console.warn(`⚠️ [Gemini API Warning] ${error.message}. Switching to contextual fallback response.`);
+    const firstLine = error.message.split('\n')[0];
+    console.warn(`⚠️ [AI Contextual Fallback Active] ${firstLine}. Seamlessly serving career guidance.`);
     return generateFallbackJSON(prompt);
   }
 };

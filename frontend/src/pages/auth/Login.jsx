@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { login } from '../../services/api';
@@ -28,11 +28,6 @@ export default function Login() {
       : null
   );
 
-  useEffect(() => {
-    if (location.state?.email) {
-      setForm((prev) => ({ ...prev, email: location.state.email }));
-    }
-  }, [location.state]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });

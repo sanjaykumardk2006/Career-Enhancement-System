@@ -60,13 +60,22 @@ const analyzeResume = async (req, res) => {
     const resume = await Resume.findOne({ user: req.user._id });
     if (!resume) return res.status(404).json({ message: 'Resume not found. Please build your resume first.' });
 
+    const summary = resume.summary || req.user.bio || '';
+    const skills = (resume.skills && resume.skills.length > 0)
+      ? resume.skills
+      : (req.user.skills || []).map((s) => ({ name: s, level: 'Intermediate' }));
+    const careerGoal = req.user.careerGoal || 'Software Engineer';
+
     const resumeText = JSON.stringify({
-      summary: resume.summary,
-      skills: resume.skills,
-      experience: resume.experience,
-      education: resume.education,
-      projects: resume.projects,
-      certifications: resume.certifications,
+      candidateName: resume.personalInfo?.name || req.user.name,
+      careerGoal,
+      summary,
+      skills,
+      experience: resume.experience || [],
+      education: resume.education || [],
+      projects: resume.projects || [],
+      certifications: resume.certifications || [],
+      uploadedDocument: resume.uploadedFile || null,
     });
 
     const prompt = `You are an expert resume reviewer. Analyze the following resume data and provide detailed feedback:

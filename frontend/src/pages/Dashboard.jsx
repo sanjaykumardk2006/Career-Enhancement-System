@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { getJobApplications, getInterviews, getRoadmap } from '../services/api';
 import {
   Brain, FileText, Mic, Briefcase, TrendingUp, BookOpen,
-  ChevronRight, Target, MessageSquare, Compass, CheckCircle2, ArrowUpRight
+  ChevronRight, Target, MessageSquare, ArrowUpRight
 } from 'lucide-react';
 import './Dashboard.css';
 

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { generateRoadmap, getRoadmap, updateTopicProgress } from '../../services/api';
 import toast from 'react-hot-toast';
-import { BookOpen, CheckCircle, Circle, ExternalLink, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import { BookOpen, CheckCircle, Circle, ExternalLink, ChevronDown, ChevronUp, Sparkles, Compass } from 'lucide-react';
 
 const resourceTypeIcon = { Video: '🎬', Article: '📄', Course: '🎓', Book: '📚', Practice: '💻' };
 

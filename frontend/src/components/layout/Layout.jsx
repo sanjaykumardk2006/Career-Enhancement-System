@@ -10,10 +10,12 @@ export default function Layout({ children }) {
   const { user } = useAuth();
   const location = useLocation();
 
-  // Automatically close mobile sidebar on route change
-  useEffect(() => {
+  // Automatically close mobile sidebar on route change during render
+  const [prevPathname, setPrevPathname] = useState(location.pathname);
+  if (prevPathname !== location.pathname) {
+    setPrevPathname(location.pathname);
     setMobileOpen(false);
-  }, [location.pathname]);
+  }
 
   // Prevent background scrolling when mobile sidebar is open
   useEffect(() => {

@@ -1,23 +1,35 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { getCareerRecommendations } from '../../services/api';
+import { getCareerRecommendations, updateProfile } from '../../services/api';
 import toast from 'react-hot-toast';
-import { Brain, TrendingUp, RefreshCw, DollarSign, Zap } from 'lucide-react';
+import { Brain, TrendingUp, RefreshCw, DollarSign, Zap, Sparkles, Target, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-export default function CareerRecommendations() {
-  const { user } = useAuth();
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
+const POPULAR_GOALS = [
+  'Full Stack Developer',
+  'Frontend Developer',
+  'Backend Developer',
+  'Data Scientist',
+  'DevOps Engineer',
+  'AI/ML Engineer',
+  'Cloud Architect',
+];
 
-  const fetchRecommendations = async () => {
-    if (!user?.careerGoal) return toast.error('Please set a career goal first');
+export default function CareerRecommendations() {
+  const { user, updateUser } = useAuth();
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(Boolean(user?.careerGoal));
+  const [quickSelecting, setQuickSelecting] = useState(false);
+
+  const fetchRecommendations = async (overrideGoal) => {
+    const goal = overrideGoal || user?.careerGoal;
+    if (!goal) return toast.error('Please select a career goal first');
     setLoading(true);
     try {
       const res = await getCareerRecommendations({
-        careerGoal: user.careerGoal,
-        currentSkills: user.skills || [],
-        education: user.education || [],
+        careerGoal: goal,
+        currentSkills: user?.skills || [],
+        education: user?.education || [],
       });
       setData(res.data);
     } catch (err) {
@@ -40,12 +52,29 @@ export default function CareerRecommendations() {
         })
         .catch((err) => {
           if (!ignore) toast.error(err.response?.data?.message || 'Failed to get recommendations');
+        })
+        .finally(() => {
+          if (!ignore) setLoading(false);
         });
     }
     return () => {
       ignore = true;
     };
   }, [user?.careerGoal, user?.skills, user?.education]);
+
+  const handleQuickSelectGoal = async (goal) => {
+    setQuickSelecting(true);
+    try {
+      const { data: updatedUser } = await updateProfile({ careerGoal: goal });
+      updateUser(updatedUser);
+      toast.success(`Career goal calibrated: ${goal}`);
+      fetchRecommendations(goal);
+    } catch {
+      toast.error('Failed to update career goal');
+    } finally {
+      setQuickSelecting(false);
+    }
+  };
 
   const demandColor = { High: 'badge-success', Medium: 'badge-warning', Low: 'badge-danger' };
 
@@ -60,19 +89,43 @@ export default function CareerRecommendations() {
               <p>Personalized market trajectory analysis calibrated to your profile and competencies</p>
             </div>
           </div>
-          <button onClick={fetchRecommendations} className="btn btn-secondary" disabled={loading}>
-            <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
-            {loading ? 'Analyzing...' : 'Recalibrate'}
-          </button>
+          {user?.careerGoal && (
+            <button onClick={() => fetchRecommendations()} className="btn btn-secondary" disabled={loading}>
+              <RefreshCw size={15} className={loading ? 'animate-spin' : ''} />
+              {loading ? 'Analyzing...' : 'Recalibrate'}
+            </button>
+          )}
         </div>
       </div>
 
       {!user?.careerGoal && (
-        <div className="card" style={{ textAlign: 'center', padding: '3rem' }}>
-          <Brain size={48} style={{ color: 'var(--primary)', margin: '0 auto 1rem' }} />
-          <h3>Set Your Career Goal First</h3>
-          <p style={{ marginBottom: '1.5rem' }}>AI recommendations are personalized based on your career goal and skills</p>
-          <Link to="/career/goals" className="btn btn-primary">Set Career Goal</Link>
+        <div className="card mb-2" style={{ padding: '2.5rem 1.75rem', textAlign: 'center' }}>
+          <div style={{ width: 64, height: 64, background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem' }}>
+            <Target size={30} style={{ color: 'var(--primary)' }} />
+          </div>
+          <h3 style={{ marginBottom: '0.5rem' }}>Choose Your Desired Career Trajectory</h3>
+          <p style={{ color: 'var(--text-muted)', maxWidth: 520, margin: '0 auto 1.75rem', fontSize: '0.925rem' }}>
+            Select a target role below to instantly trigger tailored market demand analytics, compensation insights, and required skills.
+          </p>
+
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', justifyContent: 'center', maxWidth: 640, margin: '0 auto 2rem' }}>
+            {POPULAR_GOALS.map((goal) => (
+              <button
+                key={goal}
+                onClick={() => handleQuickSelectGoal(goal)}
+                disabled={quickSelecting}
+                className="btn btn-secondary"
+                style={{ fontSize: '0.875rem', borderRadius: 'var(--radius-full)', padding: '0.55rem 1.1rem' }}
+              >
+                <Sparkles size={14} style={{ color: 'var(--primary-light)' }} />
+                {goal}
+              </button>
+            ))}
+          </div>
+
+          <Link to="/career/goals" className="btn btn-primary">
+            Explore All 16+ Career Paths <ArrowRight size={16} />
+          </Link>
         </div>
       )}
 

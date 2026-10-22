@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { getSkillGapAnalysis } from '../../services/api';
 import toast from 'react-hot-toast';
-import { Search, ArrowRight, CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import { Search, ArrowRight, CheckCircle, AlertCircle, Clock, BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const priorityStyles = { Critical: 'badge-danger', Important: 'badge-warning', 'Nice-to-have': 'badge-muted' };
@@ -11,8 +11,26 @@ const relevanceStyles = { High: 'badge-success', Medium: 'badge-warning', Low: '
 export default function SkillGap() {
   const { user } = useAuth();
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(Boolean(user?.careerGoal));
   const [form, setForm] = useState({ careerGoal: user?.careerGoal || '', currentSkills: user?.skills?.join(', ') || '' });
+
+  useEffect(() => {
+    let ignore = false;
+    if (user?.careerGoal) {
+      const skills = user.skills || [];
+      getSkillGapAnalysis({ careerGoal: user.careerGoal, currentSkills: skills })
+        .then((res) => {
+          if (!ignore) setData(res.data);
+        })
+        .catch((err) => console.debug('Initial skill gap fetch:', err?.message))
+        .finally(() => {
+          if (!ignore) setLoading(false);
+        });
+    }
+    return () => {
+      ignore = true;
+    };
+  }, [user?.careerGoal, user?.skills]);
 
   const handleAnalyze = async () => {
     if (!form.careerGoal) return toast.error('Please enter a career goal');
