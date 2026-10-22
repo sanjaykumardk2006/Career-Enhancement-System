@@ -279,7 +279,7 @@ export default function AdminDashboard() {
           className={`admin-tab-btn ${activeTab === 'applications' ? 'active' : ''}`}
           onClick={() => setTab('applications')}
         >
-          <Briefcase size={16} /> Institutional Pipeline
+          <Briefcase size={16} /> Institutional Job Tracker
           {appStats.total > 0 && <span className="admin-tab-count">{appStats.total}</span>}
         </button>
 
@@ -429,7 +429,7 @@ export default function AdminDashboard() {
                         style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem' }}
                         onClick={() => handleInspectUser(u._id)}
                       >
-                        <Eye size={13} /> Dossier
+                        <Eye size={13} /> View
                       </button>
                     </div>
                   ))}
@@ -600,11 +600,11 @@ export default function AdminDashboard() {
                         {/* Actions */}
                         <td>
                           <div className="action-btn-group" style={{ justifyContent: 'flex-end' }}>
-                            {/* Inspect Dossier */}
+                            {/* Inspect View */}
                             <button
                               type="button"
                               className="action-btn view"
-                              title="Inspect Full Candidate Dossier"
+                              title="View Candidate Portfolio"
                               onClick={() => handleInspectUser(targetUser._id)}
                             >
                               <Eye size={15} />
@@ -878,20 +878,20 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Loading Dossier Overlay */}
+      {/* Loading View Overlay */}
       {loadingDossier && (
         <div className="admin-modal-backdrop">
           <div className="admin-modal-card" style={{ maxWidth: 320, padding: '2rem', textAlign: 'center', alignItems: 'center' }}>
             <div className="spinner" style={{ margin: '0 auto 1rem' }} />
             <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-              Retrieving candidate portfolio dossier...
+              Retrieving candidate portfolio view...
             </p>
           </div>
         </div>
       )}
 
       {/* =========================================================
-          MODAL: CANDIDATE PORTFOLIO DOSSIER
+          MODAL: CANDIDATE PORTFOLIO VIEW
          ========================================================= */}
       {selectedUserDossier && (
         <div className="admin-modal-backdrop" onClick={() => setSelectedUserDossier(null)}>
@@ -899,7 +899,7 @@ export default function AdminDashboard() {
             <div className="admin-modal-header">
               <div className="admin-modal-title">
                 <FileText size={18} color="var(--primary-light)" />
-                Candidate Portfolio Dossier
+                Candidate Portfolio View
               </div>
               <button
                 type="button"
@@ -1066,7 +1066,7 @@ export default function AdminDashboard() {
                 className="btn btn-secondary btn-sm"
                 onClick={() => setSelectedUserDossier(null)}
               >
-                Close Dossier
+                Close View
               </button>
             </div>
           </div>

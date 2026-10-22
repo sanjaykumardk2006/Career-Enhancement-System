@@ -13,7 +13,7 @@ const quickActions = [
   { to: '/resume/builder', icon: FileText, label: 'Resume Builder', color: '#38bdf8', bg: 'rgba(2,132,199,0.12)' },
   { to: '/interview', icon: Mic, label: 'Mock Interview Studio', color: '#fbbf24', bg: 'rgba(217,119,6,0.12)' },
   { to: '/skills/gap', icon: BookOpen, label: 'Skill Gap Matrix', color: '#34d399', bg: 'rgba(5,150,105,0.12)' },
-  { to: '/jobs', icon: Briefcase, label: 'Pipeline Tracker', color: '#f472b6', bg: 'rgba(219,39,119,0.12)' },
+  { to: '/jobs', icon: Briefcase, label: 'Job Tracker', color: '#f472b6', bg: 'rgba(219,39,119,0.12)' },
   { to: '/career/chatbot', icon: MessageSquare, label: 'Career Copilot', color: '#a78bfa', bg: 'rgba(124,58,237,0.12)' },
 ];
 
@@ -193,9 +193,9 @@ export default function Dashboard() {
 
       {/* Recent Applications */}
       <div className="section-header mt-2">
-        <h3>Recent Pipeline Activity</h3>
+        <h3>Recent Job Tracker Activity</h3>
         <Link to="/jobs" className="btn btn-ghost btn-sm">
-          View Pipeline <ArrowUpRight size={14} />
+          View Job Tracker <ArrowUpRight size={14} />
         </Link>
       </div>
 
@@ -228,7 +228,7 @@ export default function Dashboard() {
         <div className="card empty-state">
           <Briefcase size={32} style={{ color: 'var(--text-muted)', margin: '0 auto 0.75rem' }} />
           <h3>No applications tracked yet</h3>
-          <p>Begin tracking your job applications, interviews, and offers in one organized pipeline.</p>
+          <p>Begin tracking your job applications, interviews, and offers in your organized job tracker.</p>
           <Link to="/jobs" className="btn btn-secondary btn-sm mt-1">
             Add First Application
           </Link>

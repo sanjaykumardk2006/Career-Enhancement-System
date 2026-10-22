@@ -80,12 +80,82 @@ export default function InterviewSession() {
               <div style={{ width: 32, height: 32, background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary-light)', fontWeight: 700, flexShrink: 0, fontSize: '0.85rem' }}>
                 {currentQ + 1}
               </div>
-              <p style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--text-primary)', lineHeight: 1.6, paddingTop: '0.2rem' }}>
-                {interview.questions[currentQ]?.question}
-              </p>
+              <div style={{ flex: 1 }}>
+                <span className="badge badge-primary" style={{ marginBottom: '0.35rem', fontSize: '0.7rem' }}>
+                  Multiple Choice Question
+                </span>
+                <p style={{ fontSize: '1.05rem', fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.5, margin: 0 }}>
+                  {interview.questions[currentQ]?.question}
+                </p>
+              </div>
             </div>
-            <textarea value={answers[currentQ] || ''} onChange={(e) => setAnswers({ ...answers, [currentQ]: e.target.value })}
-              className="form-textarea" rows={6} placeholder="Type your answer here... Take your time and be thorough." />
+
+            {/* MCQ Options */}
+            {interview.questions[currentQ]?.options && interview.questions[currentQ].options.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '1rem' }}>
+                {interview.questions[currentQ].options.map((option, optIdx) => {
+                  const isSelected = answers[currentQ] === option;
+                  const letter = option.trim().match(/^([A-D])[\s.):-]/i)?.[1]?.toUpperCase() || String.fromCharCode(65 + optIdx);
+                  const optionCleanText = option.replace(/^[A-D][\s.):-]+/i, '').trim() || option;
+
+                  return (
+                    <div
+                      key={optIdx}
+                      onClick={() => setAnswers({ ...answers, [currentQ]: option })}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '1rem',
+                        padding: '1rem 1.15rem',
+                        background: isSelected ? 'rgba(79, 70, 229, 0.12)' : 'var(--bg-input)',
+                        border: `1.5px solid ${isSelected ? 'var(--primary)' : 'var(--border)'}`,
+                        borderRadius: 'var(--radius-md)',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                        boxShadow: isSelected ? '0 0 0 1px var(--primary)' : 'none',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: 'var(--radius-full)',
+                          background: isSelected ? 'var(--primary)' : 'rgba(255, 255, 255, 0.05)',
+                          color: isSelected ? '#fff' : 'var(--text-secondary)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '0.8rem',
+                          fontWeight: 700,
+                          flexShrink: 0,
+                          border: isSelected ? 'none' : '1px solid var(--border)',
+                        }}
+                      >
+                        {letter}
+                      </div>
+                      <span
+                        style={{
+                          fontSize: '0.925rem',
+                          color: isSelected ? '#fff' : 'var(--text-primary)',
+                          fontWeight: isSelected ? 600 : 400,
+                          lineHeight: 1.45,
+                        }}
+                      >
+                        {optionCleanText}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <textarea
+                value={answers[currentQ] || ''}
+                onChange={(e) => setAnswers({ ...answers, [currentQ]: e.target.value })}
+                className="form-textarea"
+                rows={5}
+                placeholder="Type your response here..."
+              />
+            )}
           </div>
 
           {/* Navigation */}
@@ -107,7 +177,7 @@ export default function InterviewSession() {
               </button>
             ) : (
               <button onClick={handleSubmit} className="btn btn-success" disabled={submitting}>
-                {submitting ? <><span className="spinner-sm" />Submitting...</> : <><Send size={16} />Submit Interview</>}
+                {submitting ? <><span className="spinner-sm" />Evaluating...</> : <><Send size={16} />Submit & Grade Interview</>}
               </button>
             )}
           </div>
@@ -116,32 +186,68 @@ export default function InterviewSession() {
         <>
           {/* Results */}
           <div className="card mb-2" style={{ textAlign: 'center', background: 'var(--bg-card)', border: '1px solid var(--border-light)' }}>
-            <CheckCircle size={48} style={{ color: 'var(--success)', margin: '0 auto 1rem', display: 'block' }} />
-            <p style={{ color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Overall Score</p>
-            <div style={{ fontSize: '3.5rem', fontWeight: 900, fontFamily: 'Outfit', color: scoreColor(interview.overallScore / 10) }}>{interview.overallScore}/100</div>
+            <CheckCircle size={48} style={{ color: interview.overallScore >= 70 ? 'var(--success)' : interview.overallScore >= 50 ? 'var(--warning)' : 'var(--danger)', margin: '0 auto 1rem', display: 'block' }} />
+            <p style={{ color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Overall Verified Score</p>
+            <div style={{ fontSize: '3.5rem', fontWeight: 900, fontFamily: 'Outfit', color: scoreColor(interview.overallScore / 10) }}>
+              {interview.overallScore}%
+            </div>
+            <div style={{ display: 'inline-flex', gap: '0.5rem', marginBottom: '1rem' }}>
+              <span className={`badge ${interview.overallScore >= 70 ? 'badge-success' : interview.overallScore >= 50 ? 'badge-warning' : 'badge-danger'}`}>
+                {interview.overallScore >= 80 ? 'Interview Ready' : interview.overallScore >= 50 ? 'Developing Competency' : 'Needs In-depth Preparation'}
+              </span>
+            </div>
             {interview.overallFeedback && (
-              <p style={{ maxWidth: 600, margin: '1rem auto 0', fontSize: '0.875rem', lineHeight: 1.7 }}>{interview.overallFeedback}</p>
+              <p style={{ maxWidth: 650, margin: '0.5rem auto 0', fontSize: '0.875rem', lineHeight: 1.7, color: 'var(--text-secondary)' }}>
+                {interview.overallFeedback}
+              </p>
             )}
           </div>
 
           {/* Per-question feedback */}
-          <h4 style={{ marginBottom: '1rem' }}>Question-by-Question Feedback</h4>
+          <h4 style={{ marginBottom: '1rem' }}>Question-by-Question Evaluation</h4>
           {interview.questions.map((q, i) => (
             <div key={i} className="card mb-1">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                <span style={{ fontWeight: 700, color: 'var(--primary-light)', fontSize: '0.875rem' }}>Q{i + 1}</span>
-                <p style={{ fontWeight: 600, flex: 1, color: 'var(--text-primary)', fontSize: '0.9rem' }}>{q.question}</p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', flexShrink: 0 }}>
-                  <Star size={14} style={{ color: 'var(--accent)' }} />
-                  <span style={{ fontWeight: 700, color: scoreColor(q.score), fontSize: '0.9rem' }}>{q.score}/10</span>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem', flex: 1 }}>
+                  <span style={{ fontWeight: 700, color: 'var(--primary-light)', fontSize: '0.875rem', paddingTop: '0.1rem' }}>Q{i + 1}</span>
+                  <p style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.925rem', margin: 0 }}>{q.question}</p>
                 </div>
+                <span
+                  className={`badge ${q.isCorrect ? 'badge-success' : q.score > 0 ? 'badge-warning' : 'badge-danger'}`}
+                  style={{ flexShrink: 0 }}
+                >
+                  {q.isCorrect ? 'Correct (+10 pts)' : q.score > 0 ? `Partial (+${q.score} pts)` : 'Incorrect (0 pts)'}
+                </span>
               </div>
-              {q.answer && <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', padding: '0.5rem', background: 'var(--bg-input)', borderRadius: 'var(--radius-sm)', marginBottom: '0.5rem', fontStyle: 'italic' }}>{q.answer}</p>}
-              {q.feedback && <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>{q.feedback}</p>}
+
+              {/* Candidate Selection */}
+              <div style={{ padding: '0.65rem 0.85rem', background: 'var(--bg-input)', borderRadius: 'var(--radius-sm)', marginBottom: '0.5rem', fontSize: '0.85rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Your Chosen Option: </span>
+                <strong style={{ color: q.isCorrect ? 'var(--success)' : q.score > 0 ? 'var(--warning)' : 'var(--danger)' }}>
+                  {q.selectedOption || q.answer || 'None selected'}
+                </strong>
+              </div>
+
+              {/* Correct Option if missed */}
+              {!q.isCorrect && q.correctOption && (
+                <div style={{ padding: '0.65rem 0.85rem', background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.25)', borderRadius: 'var(--radius-sm)', marginBottom: '0.5rem', fontSize: '0.85rem' }}>
+                  <span style={{ color: 'var(--success)', fontWeight: 600 }}>Correct Answer: </span>
+                  <span style={{ color: 'var(--text-primary)' }}>{q.correctOption}</span>
+                </div>
+              )}
+
+              {/* Technical Explanation */}
+              {q.feedback && (
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '0.4rem 0 0', lineHeight: 1.5 }}>
+                  {q.feedback}
+                </p>
+              )}
             </div>
           ))}
 
-          <button onClick={() => navigate('/interview')} className="btn btn-primary mt-2">Start New Interview</button>
+          <button onClick={() => navigate('/interview')} className="btn btn-primary mt-2">
+            Start New Interview Session
+          </button>
         </>
       )}
     </div>

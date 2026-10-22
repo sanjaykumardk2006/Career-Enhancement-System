@@ -64,7 +64,7 @@ function AppRoutes() {
       <Route path="/profile" element={<ProtectedRoute><Layout><Profile /></Layout></ProtectedRoute>} />
 
       {/* Career */}
-      <Route path="/career/goals" element={<ProtectedRoute><Layout><CareerGoals /></Layout></ProtectedRoute>} />
+      <Route path="/career/goals" element={<Navigate to="/career/recommendations" replace />} />
       <Route path="/career/recommendations" element={<ProtectedRoute><Layout><CareerRecommendations /></Layout></ProtectedRoute>} />
       <Route path="/career/chatbot" element={<ProtectedRoute><Layout><CareerChatbot /></Layout></ProtectedRoute>} />
 

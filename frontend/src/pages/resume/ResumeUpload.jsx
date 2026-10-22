@@ -150,13 +150,43 @@ export default function ResumeUpload() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {/* Score */}
           <div className="card" style={{ textAlign: 'center', background: 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(6,182,212,0.1))' }}>
-            <p style={{ color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Resume Score</p>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.4rem', marginBottom: '0.4rem' }}>
+              <span className={`badge ${analysis.score >= 70 ? 'badge-success' : 'badge-warning'}`}>
+                Verified Dynamic ATS Score
+              </span>
+            </div>
             <div style={{ fontSize: 'clamp(2.5rem, 8vw, 4rem)', fontWeight: 900, fontFamily: 'Outfit', background: 'linear-gradient(135deg, var(--primary-light), var(--secondary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
               {analysis.score}/100
             </div>
-            <div className="progress-bar" style={{ maxWidth: 300, margin: '1rem auto 0' }}>
+            <div className="progress-bar" style={{ maxWidth: 360, margin: '1rem auto 0' }}>
               <div className="progress-fill" style={{ width: `${analysis.score}%` }} />
             </div>
+
+            {/* Real ATS Section Breakdown */}
+            {analysis.breakdown && (
+              <div style={{ marginTop: '1.5rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.75rem', textAlign: 'left' }}>
+                <div style={{ background: 'var(--bg-secondary)', padding: '0.65rem 0.85rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Contact Details</div>
+                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>{analysis.breakdown.contact}/20 pts</div>
+                </div>
+                <div style={{ background: 'var(--bg-secondary)', padding: '0.65rem 0.85rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Summary Depth</div>
+                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>{analysis.breakdown.summary}/15 pts</div>
+                </div>
+                <div style={{ background: 'var(--bg-secondary)', padding: '0.65rem 0.85rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Skills Density</div>
+                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>{analysis.breakdown.skills}/25 pts</div>
+                </div>
+                <div style={{ background: 'var(--bg-secondary)', padding: '0.65rem 0.85rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Exp & Projects</div>
+                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>{analysis.breakdown.experienceAndProjects}/25 pts</div>
+                </div>
+                <div style={{ background: 'var(--bg-secondary)', padding: '0.65rem 0.85rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Education & Certs</div>
+                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>{analysis.breakdown.educationAndCerts}/15 pts</div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="grid-2">

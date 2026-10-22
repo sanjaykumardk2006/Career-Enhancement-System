@@ -177,7 +177,7 @@ export default function JobTracker() {
               <Briefcase size={18} strokeWidth={2.4} />
             </div>
             <div>
-              <h1>Pipeline & Application Tracker</h1>
+              <h1>Job Tracker</h1>
               <p>Visual Kanban board, active interview stages, offers, and opportunity lifecycle</p>
             </div>
           </div>
@@ -276,12 +276,12 @@ export default function JobTracker() {
       {loading ? (
         <div className="loading-overlay">
           <div className="spinner" />
-          <p>Loading application pipeline...</p>
+          <p>Loading job tracker...</p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="card empty-state" style={{ padding: '3.5rem 1rem' }}>
           <Briefcase size={48} style={{ color: 'var(--text-muted)', margin: '0 auto 1rem' }} />
-          <h3>{search || filterStatus !== 'All' ? 'No matching applications' : 'Your Pipeline is Empty'}</h3>
+          <h3>{search || filterStatus !== 'All' ? 'No matching applications' : 'Your Job Tracker is Empty'}</h3>
           <p style={{ color: 'var(--text-muted)', maxWidth: 420, margin: '0.5rem auto 1.5rem' }}>
             Track every job application, recruiter conversation, coding screen, and formal offer in one structured board.
           </p>

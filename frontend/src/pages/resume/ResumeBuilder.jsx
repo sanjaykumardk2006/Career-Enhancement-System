@@ -9,85 +9,6 @@ import './ResumeBuilder.css';
 
 const TABS = ['Personal', 'Summary', 'Education', 'Experience', 'Skills', 'Projects', 'Certifications'];
 
-const SAMPLE_PROFILE = {
-  personalInfo: {
-    name: 'Alex Morgan',
-    email: 'alex.morgan@example.com',
-    phone: '+1 (555) 349-2810',
-    address: 'San Francisco, CA',
-    linkedin: 'https://linkedin.com/in/alexmorgan-dev',
-    github: 'https://github.com/alexmorgan',
-    portfolio: 'https://alexmorgan.dev',
-  },
-  summary:
-    'Full Stack Software Engineer with 2+ years of experience engineering modern web architectures using React, Node.js, TypeScript, and MongoDB. Passionate about building high-throughput REST APIs, responsive UIs, and cloud microservices with rigorous test coverage and performance optimization.',
-  education: [
-    {
-      institution: 'University of California, Berkeley',
-      degree: 'Bachelor of Science',
-      field: 'Computer Science',
-      startYear: '2020',
-      endYear: '2024',
-      gpa: '3.85',
-    },
-  ],
-  experience: [
-    {
-      company: 'TechFlow Systems',
-      role: 'Full Stack Engineer',
-      startDate: '2024-01',
-      endDate: 'Present',
-      current: true,
-      description:
-        'Architected and deployed customer-facing microservices handling 50,000+ daily requests using Node.js, Express, and Redis. Engineered responsive component libraries in React 19 and improved bundle loading speeds by 35%.',
-    },
-    {
-      company: 'InnovateX Labs',
-      role: 'Software Engineering Intern',
-      startDate: '2023-05',
-      endDate: '2023-12',
-      current: false,
-      description:
-        'Developed RESTful endpoints with MongoDB Atlas, integrated Google Gemini LLM API for automated context extraction, and authored unit tests achieving 88% code coverage.',
-    },
-  ],
-  skills: [
-    { name: 'JavaScript / TypeScript', level: 'Expert' },
-    { name: 'React.js & Next.js', level: 'Advanced' },
-    { name: 'Node.js & Express', level: 'Advanced' },
-    { name: 'MongoDB & PostgreSQL', level: 'Intermediate' },
-    { name: 'Docker & AWS', level: 'Intermediate' },
-    { name: 'REST APIs & WebSockets', level: 'Advanced' },
-    { name: 'Git & Agile CI/CD', level: 'Expert' },
-  ],
-  projects: [
-    {
-      name: 'CareerAI Intelligence System',
-      description:
-        'Full-stack career acceleration platform featuring automated curriculum roadmap generation, real-time AI mock interviews, and ATS resume scanning.',
-      techStack: ['React', 'Node.js', 'Express', 'MongoDB', 'Gemini AI'],
-      link: 'https://careerai.example.com',
-      github: 'https://github.com/alexmorgan/careerai',
-    },
-    {
-      name: 'Distributed CloudMetrics Monitor',
-      description:
-        'Real-time telemetry and resource usage dashboard with WebSockets, live charts, and latency threshold alerts.',
-      techStack: ['TypeScript', 'React', 'Go', 'Redis', 'Docker'],
-      link: 'https://cloudmetrics.example.com',
-      github: 'https://github.com/alexmorgan/cloudmetrics',
-    },
-  ],
-  certifications: [
-    {
-      name: 'AWS Certified Solutions Architect – Associate',
-      issuer: 'Amazon Web Services (AWS)',
-      date: '2024',
-      url: 'https://aws.amazon.com/verification',
-    },
-  ],
-};
-
 export default function ResumeBuilder() {
   const [activeTab, setActiveTab] = useState(0);
   const [viewMode, setViewMode] = useState('editor'); // 'editor' | 'preview'
@@ -126,24 +47,56 @@ export default function ResumeBuilder() {
 
   const handleSave = async (customData) => {
     const payload = customData || resume;
+
+    // Required Field Validations
+    // 1. Personal Information (Full Name & Email required)
+    if (!payload.personalInfo?.name?.trim()) {
+      toast.error('Personal Info: Full Name is required.');
+      setActiveTab(0);
+      return;
+    }
+    if (!payload.personalInfo?.email?.trim()) {
+      toast.error('Personal Info: Email Address is required.');
+      setActiveTab(0);
+      return;
+    }
+
+    // 2. Skills: at least 1 required
+    const validSkills = (payload.skills || []).filter((s) => {
+      const name = typeof s === 'string' ? s : s?.name;
+      return Boolean(name && name.trim());
+    });
+    if (validSkills.length === 0) {
+      toast.error('Skills: At least 1 technical or professional skill is required.');
+      setActiveTab(4);
+      return;
+    }
+
+    // 3. Projects: at least 1 project required with name
+    const validProjects = (payload.projects || []).filter((p) => Boolean(p?.name?.trim()));
+    if (validProjects.length === 0) {
+      toast.error('Projects: At least 1 project with a project name is required.');
+      setActiveTab(5);
+      return;
+    }
+
+    // 4. Certifications: at least 1 certification required with title
+    const validCerts = (payload.certifications || []).filter((c) => Boolean(c?.name?.trim()));
+    if (validCerts.length === 0) {
+      toast.error('Certifications: At least 1 certification credential is required.');
+      setActiveTab(6);
+      return;
+    }
+
     setSaving(true);
     try {
       await updateResume(payload);
-      toast.success('Resume saved successfully!');
+      toast.success('Resume saved successfully! Viewable in your Profile.');
     } catch {
       toast.error('Failed to save resume');
     } finally {
       setSaving(false);
     }
-  };
-
-  const handleLoadSample = () => {
-    if (resume.summary || (resume.experience && resume.experience.length > 0)) {
-      if (!window.confirm('Replace current resume fields with comprehensive sample profile?')) return;
-    }
-    setResume(SAMPLE_PROFILE);
-    handleSave(SAMPLE_PROFILE);
-    toast.success('Sample profile loaded & saved! Check Live Preview.');
   };
 
   const handlePrint = () => {
@@ -169,20 +122,28 @@ export default function ResumeBuilder() {
 
   const getTabCount = (tabName) => {
     switch (tabName) {
-      case 'Personal':
-        return resume.personalInfo?.name ? '✓' : '';
+      case 'Personal': {
+        const hasReq = resume.personalInfo?.name?.trim() && resume.personalInfo?.email?.trim();
+        return hasReq ? '✓' : '*';
+      }
       case 'Summary':
         return resume.summary?.trim() ? '✓' : '';
       case 'Education':
         return resume.education?.length || '';
       case 'Experience':
         return resume.experience?.length || '';
-      case 'Skills':
-        return resume.skills?.length || '';
-      case 'Projects':
-        return resume.projects?.length || '';
-      case 'Certifications':
-        return resume.certifications?.length || '';
+      case 'Skills': {
+        const validSkills = (resume.skills || []).filter((s) => (typeof s === 'string' ? s : s?.name)?.trim());
+        return validSkills.length > 0 ? `${validSkills.length}` : '*';
+      }
+      case 'Projects': {
+        const validProjects = (resume.projects || []).filter((p) => p?.name?.trim());
+        return validProjects.length > 0 ? `${validProjects.length}` : '*';
+      }
+      case 'Certifications': {
+        const validCerts = (resume.certifications || []).filter((c) => c?.name?.trim());
+        return validCerts.length > 0 ? `${validCerts.length}` : '*';
+      }
       default:
         return '';
     }
@@ -214,16 +175,6 @@ export default function ResumeBuilder() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
-          <button
-            type="button"
-            onClick={handleLoadSample}
-            className="btn btn-secondary btn-sm"
-            title="Auto-fill high-quality sample software engineer profile"
-          >
-            <Sparkles size={14} style={{ color: 'var(--primary-light)' }} />
-            Load Sample Profile
-          </button>
-
           <button
             type="button"
             onClick={() => setViewMode(viewMode === 'editor' ? 'preview' : 'editor')}
@@ -309,21 +260,23 @@ export default function ResumeBuilder() {
                 <h4 style={{ marginBottom: '1.25rem' }}>Personal Contact Information</h4>
                 <div className="grid-2">
                   {[
-                    ['name', 'Full Name'],
-                    ['email', 'Email Address'],
-                    ['phone', 'Phone Number'],
-                    ['address', 'City, State / Country'],
-                    ['linkedin', 'LinkedIn Profile URL'],
-                    ['github', 'GitHub Profile URL'],
-                    ['portfolio', 'Portfolio Website URL'],
-                  ].map(([field, label]) => (
+                    ['name', 'Full Name', true],
+                    ['email', 'Email Address', true],
+                    ['phone', 'Phone Number', false],
+                    ['address', 'City, State / Country', false],
+                    ['linkedin', 'LinkedIn Profile URL', false],
+                    ['github', 'GitHub Profile URL', false],
+                    ['portfolio', 'Portfolio Website URL', false],
+                  ].map(([field, label, isRequired]) => (
                     <div key={field} className="form-group">
-                      <label className="form-label">{label}</label>
+                      <label className="form-label">
+                        {label} {isRequired && <span style={{ color: 'var(--danger)' }}>*</span>}
+                      </label>
                       <input
                         value={resume.personalInfo?.[field] || ''}
                         onChange={(e) => updatePersonal(field, e.target.value)}
                         className="form-input"
-                        placeholder={label}
+                        placeholder={`${label}${isRequired ? ' (Required)' : ''}`}
                       />
                     </div>
                   ))}
@@ -414,7 +367,7 @@ export default function ResumeBuilder() {
                 ))}
                 {resume.education?.length === 0 && (
                   <div className="empty-state">
-                    <p>No education entries added yet. Click &quot;Add Education&quot; or &quot;Load Sample Profile&quot;.</p>
+                    <p>No education entries added yet. Click &quot;Add Education&quot; to add your academic degrees.</p>
                   </div>
                 )}
               </div>
@@ -485,8 +438,15 @@ export default function ResumeBuilder() {
             {/* 4. Skills */}
             {activeTab === 4 && (
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-                  <h4>Technical & Professional Skills</h4>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div>
+                    <h4 style={{ margin: 0 }}>
+                      Technical & Professional Skills <span style={{ color: 'var(--danger)', fontSize: '0.85rem' }}>*</span>
+                    </h4>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.2rem 0 0' }}>
+                      At least 1 technical or professional skill is required
+                    </p>
+                  </div>
                   <button
                     type="button"
                     onClick={() => addItem('skills', { name: '', level: 'Intermediate' })}
@@ -502,7 +462,7 @@ export default function ResumeBuilder() {
                         value={skill.name || ''}
                         onChange={(e) => updateItem('skills', i, 'name', e.target.value)}
                         className="form-input"
-                        placeholder="Skill (e.g. React.js, Python, Docker)"
+                        placeholder="Skill Name * (e.g. React.js, Python, Docker)"
                         style={{ flex: 1 }}
                       />
                       <select
@@ -527,7 +487,7 @@ export default function ResumeBuilder() {
                 </div>
                 {resume.skills?.length === 0 && (
                   <div className="empty-state">
-                    <p>No skills added yet.</p>
+                    <p>No skills added yet. Please click &quot;Add Skill&quot; to add at least 1 required skill.</p>
                   </div>
                 )}
               </div>
@@ -536,8 +496,15 @@ export default function ResumeBuilder() {
             {/* 5. Projects */}
             {activeTab === 5 && (
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-                  <h4>Key Technical Projects</h4>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div>
+                    <h4 style={{ margin: 0 }}>
+                      Key Technical Projects <span style={{ color: 'var(--danger)', fontSize: '0.85rem' }}>*</span>
+                    </h4>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.2rem 0 0' }}>
+                      At least 1 project with a title is required
+                    </p>
+                  </div>
                   <button
                     type="button"
                     onClick={() => addItem('projects', { name: '', description: '', techStack: [], link: '', github: '' })}
@@ -559,17 +526,19 @@ export default function ResumeBuilder() {
                     </div>
                     <div className="grid-2">
                       {[
-                        ['name', 'Project Name'],
-                        ['link', 'Live Demo URL'],
-                        ['github', 'GitHub Repository URL'],
-                      ].map(([field, label]) => (
+                        ['name', 'Project Name', true],
+                        ['link', 'Live Demo URL', false],
+                        ['github', 'GitHub Repository URL', false],
+                      ].map(([field, label, isReq]) => (
                         <div key={field} className="form-group">
-                          <label className="form-label">{label}</label>
+                          <label className="form-label">
+                            {label} {isReq && <span style={{ color: 'var(--danger)' }}>*</span>}
+                          </label>
                           <input
                             value={proj[field] || ''}
                             onChange={(e) => updateItem('projects', i, field, e.target.value)}
                             className="form-input"
-                            placeholder={label}
+                            placeholder={`${label}${isReq ? ' (Required)' : ''}`}
                           />
                         </div>
                       ))}
@@ -604,7 +573,7 @@ export default function ResumeBuilder() {
                 ))}
                 {resume.projects?.length === 0 && (
                   <div className="empty-state">
-                    <p>No projects added yet.</p>
+                    <p>No projects added yet. Please click &quot;Add Project&quot; to add at least 1 required project.</p>
                   </div>
                 )}
               </div>
@@ -613,8 +582,15 @@ export default function ResumeBuilder() {
             {/* 6. Certifications */}
             {activeTab === 6 && (
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-                  <h4>Certifications & Credentials</h4>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div>
+                    <h4 style={{ margin: 0 }}>
+                      Certifications & Credentials <span style={{ color: 'var(--danger)', fontSize: '0.85rem' }}>*</span>
+                    </h4>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: '0.2rem 0 0' }}>
+                      At least 1 certification credential is required
+                    </p>
+                  </div>
                   <button
                     type="button"
                     onClick={() => addItem('certifications', { name: '', issuer: '', date: '', url: '' })}
@@ -636,18 +612,20 @@ export default function ResumeBuilder() {
                     </div>
                     <div className="grid-2">
                       {[
-                        ['name', 'Certification Title'],
-                        ['issuer', 'Issuing Organization'],
-                        ['date', 'Date Earned / Year'],
-                        ['url', 'Verification URL'],
-                      ].map(([field, label]) => (
+                        ['name', 'Certification Title', true],
+                        ['issuer', 'Issuing Organization', false],
+                        ['date', 'Date Earned / Year', false],
+                        ['url', 'Verification URL', false],
+                      ].map(([field, label, isReq]) => (
                         <div key={field} className="form-group">
-                          <label className="form-label">{label}</label>
+                          <label className="form-label">
+                            {label} {isReq && <span style={{ color: 'var(--danger)' }}>*</span>}
+                          </label>
                           <input
                             value={cert[field] || ''}
                             onChange={(e) => updateItem('certifications', i, field, e.target.value)}
                             className="form-input"
-                            placeholder={label}
+                            placeholder={`${label}${isReq ? ' (Required)' : ''}`}
                           />
                         </div>
                       ))}
@@ -656,7 +634,7 @@ export default function ResumeBuilder() {
                 ))}
                 {resume.certifications?.length === 0 && (
                   <div className="empty-state">
-                    <p>No certifications added yet.</p>
+                    <p>No certifications added yet. Please click &quot;Add Certification&quot; to add at least 1 required credential.</p>
                   </div>
                 )}
               </div>

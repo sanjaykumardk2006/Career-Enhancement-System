@@ -72,7 +72,7 @@ export default function MockInterview() {
           </div>
           <div>
             <h1>Mock Interview Studio</h1>
-            <p>Real-time conversational evaluation, technical probing, and structured rubrics</p>
+            <p>AI Multiple-Choice technical assessments, scenario judgment questions, and objective scoring</p>
           </div>
         </div>
       </div>

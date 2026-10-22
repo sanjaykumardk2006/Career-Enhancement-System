@@ -21,29 +21,31 @@ const getGenAI = () => {
 const generateFallbackJSON = (prompt) => {
   const lower = prompt.toLowerCase();
 
-  // 1. Resume Analysis
-  if (lower.includes('resume reviewer') || lower.includes('resume data')) {
+  // 1. Resume Analysis with dynamic ATS score
+  if (lower.includes('resume reviewer') || lower.includes('resume data') || lower.includes('ats evaluator')) {
+    const scoreMatch = prompt.match(/"evaluatedAtsScore"\s*:\s*(\d+)/i) || prompt.match(/section score is (\d+)/i);
+    const dynamicScore = scoreMatch ? parseInt(scoreMatch[1], 10) : 72;
     return {
-      score: 84,
+      score: dynamicScore,
       strengths: [
-        'Well-structured sections covering education, technical skills, and projects',
-        'Strong focus on modern web development and software engineering stacks',
-        'Clear presentation of personal contact details and portfolio links'
+        'Structured layout aligning with standard corporate Applicant Tracking Systems (ATS)',
+        'Technical competency section presents recognizable technologies and framework proficiencies',
+        'Direct contact coordinates and professional portfolio links clearly outlined'
       ],
       weaknesses: [
-        'Bullet points lack quantifiable metrics (e.g., latency reduction, user counts, performance %)',
-        'Professional summary is relatively brief and could articulate career aspirations more clearly',
-        'Could include more industry-specific ATS keywords for your target role'
+        'Project and experience descriptions could include more quantifiable impact percentages or metrics',
+        'Target role keywords could be repeated more consistently across summary and experience bullets',
+        'Could expand on cloud deployment, unit testing, and production monitoring credentials'
       ],
       suggestions: [
-        'Start each project and experience bullet with strong action verbs (e.g., Architected, Engineered, Optimized)',
-        'Quantify achievements where possible (e.g., "improved load time by 35%")',
-        'Tailor skills and keyword section directly to the job descriptions you apply for',
-        'Add live demo and GitHub repository links for all featured projects',
-        'Include any technical certifications, hackathon awards, or relevant coursework'
+        'Front-load experience bullet points with strong action verbs (e.g., Architected, Spearheaded, Optimized)',
+        'Quantify engineering outcomes with measurable metrics (e.g. "improved query throughput by 35%")',
+        'Align keyword density with high-priority terms in job postings for your target role',
+        'Ensure all featured projects link to live deployed environments and public GitHub source repositories',
+        'Add industry-standard cloud or security certifications to maximize ATS ranking'
       ],
       keywords: [
-        'JavaScript', 'React.js', 'Node.js', 'Express', 'MongoDB', 'REST APIs', 'Git', 'Agile', 'Full Stack', 'Problem Solving'
+        'Full Stack Architecture', 'RESTful APIs', 'Database Optimization', 'State Management', 'CI/CD Pipelines', 'Docker', 'Authentication', 'TypeScript'
       ]
     };
   }
@@ -158,34 +160,97 @@ const generateFallbackJSON = (prompt) => {
     };
   }
 
-  // 4. Skill Gap Analysis
+  // 4. Skill Gap Analysis with honest readiness and role-tailored gaps
   if (lower.includes('skill gap') || lower.includes('missing skills') || lower.includes('currentskillsassessment')) {
+    const readyMatch = prompt.match(/genuine readiness:\s*(\d+)%/i) || prompt.match(/"overallReadiness":\s*(\d+)/i);
+    const parsedReadiness = readyMatch ? parseInt(readyMatch[1], 10) : 35;
+
+    // Check if prompt provided pre-computed arrays
+    const assessMatch = prompt.match(/"currentSkillsAssessment":\s*(\[[^\]]*\])/);
+    const missingMatch = prompt.match(/"missingSkills":\s*(\[[^\]]*\])/);
+
+    let currentSkills = [
+      { skill: 'Core Web Development (HTML/CSS/JS)', relevance: 'High', proficiencyNeeded: 'Advanced' }
+    ];
+    let missing = [
+      { skill: 'System Architecture & Production Deployment', priority: 'Critical', estimatedLearningTime: '3 - 4 weeks' },
+      { skill: 'Automated Testing & Security Validation', priority: 'Important', estimatedLearningTime: '2 - 3 weeks' }
+    ];
+
+    try {
+      if (assessMatch) currentSkills = JSON.parse(assessMatch[1]);
+      if (missingMatch) missing = JSON.parse(missingMatch[1]);
+    } catch {
+      // Use defaults
+    }
+
     return {
-      currentSkillsAssessment: [
-        { skill: 'Core Web Development (HTML/CSS/JS)', relevance: 'High', proficiencyNeeded: 'Advanced' },
-        { skill: 'React / Frontend Architecture', relevance: 'High', proficiencyNeeded: 'Intermediate' },
-        { skill: 'Backend API Development (Node/Express)', relevance: 'High', proficiencyNeeded: 'Intermediate' },
-        { skill: 'Database Management (MongoDB/SQL)', relevance: 'Medium', proficiencyNeeded: 'Intermediate' }
-      ],
-      missingSkills: [
-        { skill: 'Distributed System Architecture & Caching (Redis)', priority: 'Critical', estimatedLearningTime: '3 - 4 weeks' },
-        { skill: 'Automated Testing (Jest, Playwright, CI/CD)', priority: 'Important', estimatedLearningTime: '2 - 3 weeks' },
-        { skill: 'Containerization & Cloud Infrastructure (Docker & AWS)', priority: 'Important', estimatedLearningTime: '3 weeks' }
-      ],
-      overallReadiness: 76,
-      summary: 'You possess a solid foundation in modern full-stack development. Adding production testing, cloud deployment, and system architecture will make your profile stand out to top engineering teams.'
+      currentSkillsAssessment: currentSkills,
+      missingSkills: missing,
+      overallReadiness: parsedReadiness,
+      summary: `Your profile readiness is evaluated at ${parsedReadiness}%. Bridging the identified missing competencies through guided projects will prepare you for competitive technical screening.`
     };
   }
 
-  // 5. Mock Interview Questions
-  if (lower.includes('interview question') || lower.includes('questions')) {
+  // 5. Mock Interview Multiple Choice Questions (MCQs)
+  if (lower.includes('interview question') || lower.includes('multiple-choice') || lower.includes('mcqs') || lower.includes('questions')) {
     return {
       questions: [
-        { question: 'Could you walk me through a challenging technical project you built, explaining your architecture choices and key technical tradeoffs?' },
-        { question: 'How do you handle asynchronous operations, state management, and error handling in a full-stack application?' },
-        { question: 'Explain how you approach database query optimization and indexing when an application scales up in traffic.' },
-        { question: 'Describe a situation where you encountered an unexpected bug in production. What was your debugging methodology?' },
-        { question: 'How do you ensure your code is secure against common vulnerabilities such as XSS, CSRF, and SQL/NoSQL injection?' }
+        {
+          question: 'In modern frontend architecture, what is the primary benefit of leveraging React 19 Actions and useActionState over traditional useEffect-based data mutation?',
+          options: [
+            'A) Automatically handles pending states, optimistic updates, and resets without manual state tracking',
+            'B) Forces synchronous DOM rendering to eliminate component re-renders completely',
+            'C) Replaces all CSS stylesheets with inline styles automatically',
+            'D) Bypasses browser security policies for faster API requests'
+          ],
+          correctOption: 'A) Automatically handles pending states, optimistic updates, and resets without manual state tracking',
+          explanation: 'React Actions manage async state transitions, pending indicators, error handling, and optimistic rollbacks natively without requiring repetitive boilerplate or effect synchronization.'
+        },
+        {
+          question: 'When designing a high-throughput REST API with Node.js and MongoDB, which strategy best mitigates slow database queries under heavy read traffic?',
+          options: [
+            'A) Implementing targeted compound indexing and caching frequent queries in an in-memory Redis cache',
+            'B) Running a full table scan on every incoming HTTP request',
+            'C) Storing all database queries inside local JSON files on the server disk',
+            'D) Disabling all query indexing to save storage space'
+          ],
+          correctOption: 'A) Implementing targeted compound indexing and caching frequent queries in an in-memory Redis cache',
+          explanation: 'Targeted indexes allow the database engine to quickly seek matching documents, while an in-memory Redis cache absorbs repetitive reads, drastically reducing database load and response latency.'
+        },
+        {
+          question: 'What is the primary role of JSON Web Tokens (JWT) in stateless client-server authentication?',
+          options: [
+            'A) Encrypting the entire database password table on every user login',
+            'B) Securely transmitting verified claims between parties via a cryptographically signed signature',
+            'C) Storing large binary video files directly in the browser cookie',
+            'D) Blocking all cross-origin requests regardless of CORS configuration'
+          ],
+          correctOption: 'B) Securely transmitting verified claims between parties via a cryptographically signed signature',
+          explanation: 'JWTs allow servers to verify the authenticity of user claims and identity using an HMAC or RSA cryptographic signature without storing session state in server memory.'
+        },
+        {
+          question: 'Which HTTP status code should be returned when an authenticated client attempts to modify a resource that they do not have administrative permission to access?',
+          options: [
+            'A) 403 Forbidden',
+            'B) 401 Unauthorized',
+            'C) 404 Not Found',
+            'D) 200 OK'
+          ],
+          correctOption: 'A) 403 Forbidden',
+          explanation: '401 Unauthorized indicates the client lacks authentication credentials, whereas 403 Forbidden indicates the server understands who the client is, but refuses to authorize the requested operation.'
+        },
+        {
+          question: 'In containerized software deployment, what is the key advantage of using multi-stage Docker builds?',
+          options: [
+            'A) Minimizing final production image size by separating build tools from the lightweight runtime image',
+            'B) Running multiple operating systems simultaneously on a single CPU core',
+            'C) Automatically rewriting JavaScript into assembly code',
+            'D) Disabling all network firewalls within the container'
+          ],
+          correctOption: 'A) Minimizing final production image size by separating build tools from the lightweight runtime image',
+          explanation: 'Multi-stage builds leave compiler SDKs, package caches, and devDependencies behind in intermediate stages, keeping the final production container minimal, secure, and fast to download.'
+        }
       ]
     };
   }
@@ -193,9 +258,9 @@ const generateFallbackJSON = (prompt) => {
   // 6. Answer Evaluation
   if (lower.includes('evaluating an answer') || lower.includes('candidate\'s answer')) {
     return {
-      feedback: 'Great response! You explained the technical core clearly and highlighted good awareness of engineering best practices.',
-      score: 8,
-      improvements: 'Consider structuring your answer with the STAR framework (Situation, Task, Action, Result) and citing specific measurable outcomes or metrics.'
+      feedback: 'Good technical reasoning demonstrated.',
+      score: 10,
+      improvements: 'Continue reviewing core design trade-offs and best practices.'
     };
   }
 

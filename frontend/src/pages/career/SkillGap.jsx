@@ -86,14 +86,37 @@ export default function SkillGap() {
         <>
           {/* Readiness Score */}
           <div className="card mb-2" style={{ textAlign: 'center' }}>
-            <p style={{ color: 'var(--text-muted)', marginBottom: '0.75rem', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Overall Career Readiness</p>
-            <div style={{ fontSize: '3.75rem', fontWeight: 800, fontFamily: 'Plus Jakarta Sans', color: 'var(--primary-light)', letterSpacing: '-0.03em' }}>
+            <p style={{ color: 'var(--text-muted)', marginBottom: '0.5rem', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Genuine Role Readiness Benchmark
+            </p>
+            <div
+              style={{
+                fontSize: '3.75rem',
+                fontWeight: 800,
+                fontFamily: 'Plus Jakarta Sans',
+                color: data.overallReadiness >= 75 ? 'var(--success)' : data.overallReadiness >= 40 ? 'var(--warning)' : 'var(--danger)',
+                letterSpacing: '-0.03em',
+              }}
+            >
               {data.overallReadiness}%
             </div>
-            <div className="progress-bar" style={{ maxWidth: 300, margin: '1rem auto 0' }}>
-              <div className="progress-fill" style={{ width: `${data.overallReadiness}%` }} />
+            <div style={{ display: 'inline-flex', gap: '0.5rem', marginBottom: '0.75rem' }}>
+              <span className={`badge ${data.overallReadiness >= 75 ? 'badge-success' : data.overallReadiness >= 40 ? 'badge-warning' : 'badge-danger'}`}>
+                {data.overallReadiness >= 75 ? 'Market Ready' : data.overallReadiness >= 40 ? 'Moderate Alignment' : 'Substantial Gap — Upskilling Required'}
+              </span>
             </div>
-            <p style={{ marginTop: '0.75rem', fontSize: '0.875rem' }}>{data.summary}</p>
+            <div className="progress-bar" style={{ maxWidth: 360, margin: '0.5rem auto 1rem' }}>
+              <div
+                className="progress-fill"
+                style={{
+                  width: `${data.overallReadiness}%`,
+                  background: data.overallReadiness >= 75 ? 'var(--success)' : data.overallReadiness >= 40 ? 'var(--warning)' : 'var(--danger)',
+                }}
+              />
+            </div>
+            <p style={{ margin: '0 auto', fontSize: '0.875rem', color: 'var(--text-secondary)', maxWidth: 650, lineHeight: 1.6 }}>
+              {data.summary}
+            </p>
           </div>
 
           <div className="grid-2">
@@ -112,6 +135,13 @@ export default function SkillGap() {
                     <span className={`badge ${relevanceStyles[item.relevance] || 'badge-muted'}`}>{item.relevance}</span>
                   </div>
                 ))}
+                {(!data.currentSkillsAssessment || data.currentSkillsAssessment.length === 0) && (
+                  <div className="empty-state" style={{ padding: '1.5rem 1rem' }}>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                      No matching verified skills yet for this role. You are embarking on a brand new learning journey!
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 

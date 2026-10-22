@@ -10,22 +10,21 @@ import './Sidebar.css';
 
 const studentNavItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/career/goals', icon: TrendingUp, label: 'Career Goals' },
-  { to: '/career/recommendations', icon: Brain, label: 'AI Recommendations' },
+  { to: '/career/recommendations', icon: Brain, label: 'AI Recommendations & Goals' },
   { to: '/career/chatbot', icon: MessageSquare, label: 'Career Copilot' },
   { to: '/resume/builder', icon: FileText, label: 'Resume Builder' },
   { to: '/resume/upload', icon: Sparkles, label: 'Resume Intelligence' },
   { to: '/skills/gap', icon: BookOpen, label: 'Skill Gap Matrix' },
   { to: '/skills/roadmap', icon: Compass, label: 'Learning Roadmap' },
   { to: '/interview', icon: Mic, label: 'Mock Interview' },
-  { to: '/jobs', icon: Briefcase, label: 'Pipeline Tracker' },
+  { to: '/jobs', icon: Briefcase, label: 'Job Tracker' },
   { to: '/profile', icon: User, label: 'Profile' },
 ];
 
 const adminPrimaryItems = [
   { to: '/admin', icon: ShieldCheck, label: 'Executive Console' },
   { to: '/admin?tab=users', icon: Users, label: 'User Directory & Access' },
-  { to: '/admin?tab=applications', icon: Briefcase, label: 'Applications Pipeline' },
+  { to: '/admin?tab=applications', icon: Briefcase, label: 'Job Tracker' },
   { to: '/admin?tab=security', icon: Lock, label: 'Security & Audit' },
 ];
 
@@ -34,7 +33,7 @@ const adminSimulatorItems = [
   { to: '/career/recommendations', icon: Brain, label: 'AI Recommendations' },
   { to: '/resume/builder', icon: FileText, label: 'Resume Studio' },
   { to: '/interview', icon: Mic, label: 'Mock Interview' },
-  { to: '/jobs', icon: Briefcase, label: 'Pipeline Tracker' },
+  { to: '/jobs', icon: Briefcase, label: 'Job Tracker' },
 ];
 
 export default function Sidebar({ mobileOpen = false, closeMobile }) {
